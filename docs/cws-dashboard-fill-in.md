@@ -4,8 +4,8 @@
 
 ## 一、Package（上传包）
 
-- 上传文件：`release/rtranslate-0.1.0.zip`（由 `npm run zip` 生成，manifest.json 位于压缩包根目录）
-- 版本号递增规则：每次上传递增 `manifest.json` 的 `version`（当前 0.1.0）
+- 上传文件：`release/rtranslate-0.0.1.zip`（由 `npm run zip` 生成，manifest.json 位于压缩包根目录）
+- 版本号递增规则：每次上传递增 `manifest.json` 的 `version`（当前 0.0.1）
 
 ## 二、Store Listing（商品详情）
 
