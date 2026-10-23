@@ -372,6 +372,17 @@ function buildField(labelText: string, control: HTMLElement): HTMLElement {
   return field
 }
 
+/** 左下角弱化“跳过”链接：直接完成引导（写 onboardingCompleted:true），与“下一步”主按钮形成主次 */
+function buildSkipLink(): HTMLButtonElement {
+  const skip = el('button', 'ob-skip', L('onboarding.skip', '跳过，使用默认设置'))
+  skip.type = 'button'
+  skip.addEventListener('click', () => {
+    skip.disabled = true
+    void onFinish()
+  })
+  return skip
+}
+
 function buildStep1(cfg: Config): HTMLElement {
   const section = el('section', 'ob-step ob-step-1')
 
@@ -397,7 +408,7 @@ function buildStep1(cfg: Config): HTMLElement {
     step = 2
     render()
   })
-  actions.append(next)
+  actions.append(buildSkipLink(), next)
   section.append(actions)
   return section
 }
@@ -453,7 +464,7 @@ function buildStep2(): HTMLElement {
     step = 3
     render()
   })
-  actions.append(prev, next)
+  actions.append(buildSkipLink(), prev, next)
   section.append(actions)
   return section
 }
@@ -554,7 +565,7 @@ function buildStep3(): HTMLElement {
     finish.disabled = true
     void onFinish()
   })
-  actions.append(prev, finish)
+  actions.append(buildSkipLink(), prev, finish)
   section.append(actions)
   return section
 }

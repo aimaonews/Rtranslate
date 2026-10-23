@@ -112,6 +112,8 @@ let fileInfoEl: HTMLElement
 let langSelect: HTMLSelectElement
 let modeRadios: NodeListOf<HTMLInputElement>
 let translateBtn: HTMLButtonElement
+/** “开始翻译”禁用原因小字（未选文件时显示在按钮右侧，选中后隐藏） */
+let translateHintEl: HTMLElement
 let cancelBtn: HTMLButtonElement
 let downloadBtn: HTMLButtonElement
 let progressWrap: HTMLElement
@@ -176,15 +178,9 @@ function dropzoneSubText(): string {
   })
 }
 
-/** 执行卡片说明（批大小/并发参数，随界面语言重渲染） */
+/** 执行卡片说明（用户收益表述，随界面语言重渲染） */
 function runDescText(): string {
-  return fmt(
-    L(
-      'files.card.run.desc',
-      '按片段批量翻译（每批 {texts} 段 / {chars} 字符，并发 {concurrency}），可随时取消',
-    ),
-    { texts: BATCH_MAX_TEXTS, chars: BATCH_MAX_CHARS, concurrency: CONCURRENCY },
-  )
+  return L('files.card.run.desc', '文件在本地处理，翻译结果可随时下载')
 }
 
 /** 上传区线性图标：上传箭头（40px，stroke 继承 .dropzone-icon 的 color: 品牌蓝） */
@@ -297,6 +293,7 @@ function buildLayout(): void {
   const actions = el('div', 'actions')
   translateBtn = el('button', 'btn', L('files.action.translate', '开始翻译')) as HTMLButtonElement
   translateBtn.disabled = true
+  translateHintEl = el('span', 'translate-hint', L('files.action.translateHint', '请先选择文件'))
   cancelBtn = el('button', 'btn btn-ghost', L('files.action.cancel', '取消')) as HTMLButtonElement
   cancelBtn.style.display = 'none'
   downloadBtn = el(
@@ -306,7 +303,7 @@ function buildLayout(): void {
   ) as HTMLButtonElement
   downloadBtn.style.display = 'none'
   downloadBtn.type = 'button'
-  actions.append(translateBtn, cancelBtn, downloadBtn)
+  actions.append(translateBtn, translateHintEl, cancelBtn, downloadBtn)
   cardRun.append(actions)
 
   progressWrap = el('div', 'progress-wrap')
@@ -387,6 +384,7 @@ function resetRun(): void {
   if (state?.running) state.controller?.abort()
   state = null
   translateBtn.disabled = true
+  translateHintEl.style.display = ''
   downloadBtn.style.display = 'none'
   progressWrap.style.display = 'none'
   setStatus('')
@@ -421,6 +419,7 @@ function pickFile(file: File): void {
   resetRun()
   state = { file, parser, running: false, edited: new Set(), postEditOn: false }
   translateBtn.disabled = false
+  translateHintEl.style.display = 'none'
   downloadBtn.style.display = 'none'
   renderFileInfo()
 }
@@ -816,6 +815,7 @@ function refreshTexts(): void {
   cardRunTitleEl.textContent = L('files.card.run.title', '开始翻译')
   cardRunDescEl.textContent = runDescText()
   translateBtn.textContent = L('files.action.translate', '开始翻译')
+  translateHintEl.textContent = L('files.action.translateHint', '请先选择文件')
   cancelBtn.textContent = L('files.action.cancel', '取消')
   downloadBtn.textContent = L('files.action.download', '下载译文')
   peTitleEl.textContent = L('files.pe.title', '校订译文')

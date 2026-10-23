@@ -417,8 +417,8 @@ function buildShell(root: HTMLElement): void {
   guideLink.href = chrome.runtime.getURL('onboarding.html')
   guideLink.target = '_blank'
   guideLink.rel = 'noopener noreferrer'
-  const privacyLink = el('a', 'side-footer-link', '隐私政策')
-  privacyLink.href = 'https://www.aimao.today'
+  const privacyLink = el('a', 'side-footer-link', t('nav.privacy', config.uiLang, '隐私政策'))
+  privacyLink.href = chrome.runtime.getURL('privacy.html')
   privacyLink.target = '_blank'
   privacyLink.rel = 'noopener noreferrer'
   sideFooter.append(siteLink, guideLink, privacyLink)
@@ -784,7 +784,7 @@ function renderEngine(root: HTMLElement): void {
   const p = config.engine.provider
   const adding = customEngineAdding
 
-  const c = card('翻译引擎', '选择默认翻译引擎并完成其配置；免费引擎失败时自动降级到下一个免费引擎。')
+  const c = card('引擎选择', '选择默认翻译引擎并完成其配置；免费引擎失败时自动降级到下一个免费引擎。')
   c.append(
     fieldRow(
       '引擎',
@@ -1211,7 +1211,7 @@ function buildCustomEngineForm(editId: string | null): HTMLElement {
 // ===== 标签页 3：译文样式 =====
 
 function renderStyle(root: HTMLElement): void {
-  const c = card('译文样式', '选择译文在页面中的展示样式；大号「译」字为实时预览。')
+  const c = card('样式选择', '选择译文在页面中的展示样式；大号「译」字为实时预览。')
   const grid = el('div', 'style-grid')
   for (const s of TRANSLATION_STYLES) {
     const label = el('label', 'style-card' + (config.style.styleId === s.id ? ' selected' : ''))
@@ -1236,21 +1236,17 @@ function renderStyle(root: HTMLElement): void {
 // ===== 标签页 4：隐私 =====
 
 function renderPrivacy(root: HTMLElement): void {
-  const maskCard = el('section', 'card card-mask')
-  const head = el('div', 'mask-head')
-  const texts = el('div')
-  texts.append(
-    el('h2', 'card-title', '敏感信息脱敏'),
-    el(
-      'p',
-      'card-desc',
-      '开启后，邮箱、电话、银行卡、身份证、API Key 等敏感信息将在本地打码为占位符后再发送翻译；译文返回后在本地还原，原文与敏感信息永不离开浏览器。全部处理在本机完成，默认关闭。',
-    ),
+  // 与其他页一致：card(标题+说明) + fieldRow 行式开关（标签左+开关右），仅保留 card-mask 醒目底色
+  const maskCard = card(
+    '敏感信息脱敏',
+    '开启后，邮箱、电话、银行卡、身份证、API Key 等敏感信息将在本地打码为占位符后再发送翻译；译文返回后在本地还原，原文与敏感信息永不离开浏览器。全部处理在本机完成，默认关闭。',
   )
-  head.append(texts, buildSwitch(config.mask.enabled, '敏感信息脱敏', (v) => {
-    void patchConfig({ mask: { enabled: v } })
-  }))
-  maskCard.append(head)
+  maskCard.classList.add('card-mask')
+  maskCard.append(
+    fieldRow('启用敏感信息脱敏', buildSwitch(config.mask.enabled, '敏感信息脱敏', (v) => {
+      void patchConfig({ mask: { enabled: v } })
+    })),
+  )
 
   const statsCard = card('使用统计', '本扩展无账号、无遥测，以下数据仅保存在本机。')
   const row = el('div', 'field')
@@ -1447,6 +1443,7 @@ function renderWords(root: HTMLElement): void {
   const toolbar = el('div', 'toolbar')
   const exportBtn = el('button', 'btn btn-secondary', '导出 JSON')
   exportBtn.type = 'button'
+  exportBtn.disabled = words.length === 0
   exportBtn.addEventListener('click', exportWords)
   const importLabel = el('label', 'btn btn-secondary', '导入 JSON')
   const fileInput = el('input')

@@ -1,7 +1,7 @@
 {
   "name": "transverse",
   "displayName": "Rtranslate - 开源双语翻译",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "开源双语对照翻译：多引擎、本地脱敏、生词闪卡。无账号、无遥测。",
   "type": "module",
   "scripts": {
@@ -9,7 +9,8 @@
     "build": "node scripts/sync-pdfjs-assets.mjs && vite build && vite build -c vite.content.config.ts && vite build -c vite.subtitles.config.ts && node scripts/fix-dist.mjs",
     "build:store": "node scripts/sync-pdfjs-assets.mjs && vite build --minify false && vite build -c vite.content.config.ts --minify false && vite build -c vite.subtitles.config.ts --minify false && node scripts/fix-dist.mjs",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "zip": "npm run build && node scripts/zip-dist.mjs"
   },
   "dependencies": {
     "jszip": "^3.10.2",
@@ -20,6 +21,7 @@
     "@types/chrome": "^0.0.300",
     "@types/node": "^26.6.5",
     "jsdom": "^26.1.0",
+    "sharp": "^0.35.5",
     "typescript": "~5.9.2",
     "vite": "^7.1.0",
     "vitest": "^3.2.0"

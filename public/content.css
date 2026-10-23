@@ -85,7 +85,7 @@ tv-translation.tv-tr-replace {
 
 /* ===== 12 种译文样式（产品特色，视觉保持不动；原引用变量的值已内联以隔离 tokens 变更） ===== */
 tv-translation.tv-style-plain { color: inherit; }
-tv-translation.tv-style-soft-gray { color: #64748b; }
+tv-translation.tv-style-soft-gray, tv-translation.tv-style-soft-gray .tv-tr-inner { color: #64748b; }
 tv-translation.tv-style-bold .tv-tr-inner { font-weight: 700; }
 tv-translation.tv-style-italic .tv-tr-inner { font-style: italic; }
 tv-translation.tv-style-underline-dotted .tv-tr-inner {
@@ -516,4 +516,9 @@ tv-translation.tv-style-blur-mask:hover .tv-tr-inner {
 @media (prefers-reduced-motion: reduce) {
   .tv-compare-panel { animation-duration: 0.01ms !important; }
   .tv-compare-spin { animation-duration: 1.6s !important; }
+}
+
+/* 划词选中高亮：降饱和度，与品牌蓝/链接区分 */
+::selection {
+  background: rgba(64, 158, 255, 0.25);
 }

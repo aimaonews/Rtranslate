@@ -356,7 +356,7 @@ function resultMeta(kind: ResultKind): { title: string; desc: string } {
     case 'empty':
       return {
         title: L('review.empty.title', '生词本还是空的'),
-        desc: L('review.empty.desc', '先从收藏一个生词开始吧。'),
+        desc: L('review.empty.desc', '在网页上划词即可收藏生词。'),
       }
     case 'todayDone':
       return {
@@ -394,7 +394,10 @@ function buildResultPanel(opts: { kind: ResultKind; canContinue: boolean }): HTM
     panel.append(session)
   }
 
-  panel.append(el('p', 'result-desc', L('review.result.hint', '去网页上划词收藏生词吧')))
+  // 空态文案已并入 review.empty.desc（去重），底部引导提示仅在其他结果面板显示一次
+  if (opts.kind !== 'empty') {
+    panel.append(el('p', 'result-desc', L('review.result.hint', '去网页上划词收藏生词吧')))
+  }
 
   const actions = el('div', 'result-actions')
   if (opts.canContinue) {

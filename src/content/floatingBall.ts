@@ -1,17 +1,39 @@
-// 悬浮球：拖拽 + 点击切换整页翻译。
+// 悬浮球：拖拽 + 点击切换整页翻译。支持运行时开关（关闭即移除 DOM 与监听，无需刷新页面）。
 export interface BallHooks {
   isActive: () => boolean
   onToggle: () => void
 }
 
 let ball: HTMLElement | null = null
+let hooks: BallHooks | null = null
+let mousemoveHandler: ((e: MouseEvent) => void) | null = null
+let mouseupHandler: (() => void) | null = null
 
 export function updateBallState(active: boolean) {
   ball?.classList.toggle('tv-ball-active', active)
 }
 
-export function initFloatingBall(enabled: boolean, hooks: BallHooks) {
-  if (!enabled) return
+/** 移除悬浮球 DOM 与 document 级监听 */
+function disposeBall() {
+  if (mousemoveHandler) document.removeEventListener('mousemove', mousemoveHandler)
+  if (mouseupHandler) document.removeEventListener('mouseup', mouseupHandler)
+  mousemoveHandler = null
+  mouseupHandler = null
+  ball?.remove()
+  ball = null
+}
+
+/**
+ * 运行时开关悬浮球：enabled=true 创建（或保持），false 销毁。
+ * 配置热同步时由 applyConfig 调用，无需刷新页面。
+ */
+export function toggleFloatingBall(enabled: boolean, h: BallHooks) {
+  if (!enabled) {
+    disposeBall()
+    return
+  }
+  if (ball) return // 已存在，无需重建
+  hooks = h
   ball = document.createElement('div')
   ball.className = 'tv-ball'
   ball.setAttribute('data-tv-owned', '1')
@@ -37,7 +59,7 @@ export function initFloatingBall(enabled: boolean, hooks: BallHooks) {
     baseTop = rect.top
     e.preventDefault()
   })
-  document.addEventListener('mousemove', (e) => {
+  mousemoveHandler = (e: MouseEvent) => {
     if (!dragging || !ball) return
     const dx = e.clientX - startX
     const dy = e.clientY - startY
@@ -50,11 +72,18 @@ export function initFloatingBall(enabled: boolean, hooks: BallHooks) {
       ball.style.right = 'auto'
       ball.style.bottom = 'auto'
     }
-  })
-  document.addEventListener('mouseup', () => {
+  }
+  mouseupHandler = () => {
     if (!dragging) return
     dragging = false
-    if (!moved) hooks.onToggle()
-    updateBallState(hooks.isActive())
-  })
+    if (!moved) hooks?.onToggle()
+    updateBallState(hooks?.isActive() ?? false)
+  }
+  document.addEventListener('mousemove', mousemoveHandler)
+  document.addEventListener('mouseup', mouseupHandler)
+}
+
+/** 兼容旧接口（首次初始化） */
+export function initFloatingBall(enabled: boolean, h: BallHooks) {
+  toggleFloatingBall(enabled, h)
 }

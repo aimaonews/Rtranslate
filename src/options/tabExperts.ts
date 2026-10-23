@@ -88,7 +88,8 @@ export function renderExpertsTab(root: HTMLElement, ctx: ExpertsTabCtx): void {
     actions.style.flex = '0 0 auto'
 
     if (expert.builtin) {
-      const viewBtn = el('button', 'btn btn-ghost', '查看')
+      // 文字链样式降噪（视觉审查 #22）：不再用等宽蓝描边按钮
+      const viewBtn = el('button', 'text-link', '查看')
       viewBtn.setAttribute('type', 'button')
       viewBtn.addEventListener('click', () => {
         formState = { mode: 'view', id: expert.id }

@@ -508,6 +508,28 @@ input[type='checkbox']:not(.switch) {
   background: rgba(220, 38, 38, 0.08);
 }
 
+/* 文字链按钮：蓝色可点文字、无边框无底色（降噪用，如 experts 行内「查看」） */
+.text-link {
+  border: 0;
+  background: none;
+  padding: 2px 6px;
+  color: var(--tv-primary-text);
+  font: inherit;
+  font-size: var(--tv-fs-sub);
+  cursor: pointer;
+  border-radius: var(--tv-radius-sm);
+}
+
+.text-link:hover {
+  background: var(--tv-primary-softer);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .toolbar {
   display: flex;
   gap: 10px;
@@ -585,7 +607,8 @@ input[type='checkbox']:not(.switch) {
 
 .style-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+  /* 固定 4 列：12 个样式卡 = 3 整行，避免 auto-fill 末行悬挂（视觉审查 #17） */
+  grid-template-columns: repeat(4, 1fr);
   grid-auto-rows: 1fr;
   gap: var(--tv-space-3);
 }
@@ -728,7 +751,7 @@ input[type='checkbox']:not(.switch) {
 .stat-value {
   font-size: var(--tv-fs-card-title);
   font-weight: 700;
-  color: var(--tv-primary-text);
+  color: var(--tv-text);
   font-variant-numeric: tabular-nums;
 }
 
@@ -805,6 +828,10 @@ input[type='checkbox']:not(.switch) {
   }
   .mask-head {
     flex-direction: column;
+  }
+
+  .style-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 

@@ -671,9 +671,8 @@ function renderSiteRules(): void {
   setRowDisabled(siteNeverRow, !usable)
   const hostLabel = document.querySelector('.site-host')
   if (hostLabel) {
-    hostLabel.textContent = usable
-      ? currentHost
-      : t('popup.pageUnavailable', config.uiLang, '此页面不可用')
+    // 页面不可用时状态区已提示过“此页面不可用”，此处仅显示占位符，避免重复
+    hostLabel.textContent = usable ? currentHost : '—'
   }
   if (!usable) return
   const alwaysOn = siteListIncludes(config.general.autoTranslateSites, currentHost)
@@ -771,12 +770,9 @@ function buildControls(root: HTMLElement): void {
     ),
   )
 
-  // 9. 当前网站规则（位置不变，垫底）
+  // 9. 当前网站规则（位置不变，垫底）；host 初始为占位符，页面可用时由 renderSiteRules 填入
   const siteSection = el('div', 'site-rules')
-  siteSection.append(
-    el('div', 'site-rules-label', t('popup.currentSite', ui, '当前网站')),
-    el('div', 'site-host', t('popup.pageUnavailable', ui, '此页面不可用')),
-  )
+  siteSection.append(el('div', 'site-rules-label', t('popup.currentSite', ui, '当前网站')), el('div', 'site-host', '—'))
   siteAlwaysRow = buildSwitchRow(t('popup.alwaysSite', ui, '总是翻译此网站'), false, (on) =>
     toggleSiteRule('always', on),
   )

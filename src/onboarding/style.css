@@ -472,6 +472,23 @@ button {
   border-color: var(--tv-primary);
 }
 
+/* 左下角弱化“跳过”链接（与主按钮形成主次） */
+.ob-skip {
+  padding: 6px 2px;
+  border: 0;
+  background: none;
+  color: var(--tv-text-sub);
+  font-size: var(--tv-fs-sub);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color var(--tv-motion-fast);
+}
+
+.ob-skip:hover {
+  color: var(--tv-primary-text);
+}
+
 /* ===== 响应式 ===== */
 
 @media (max-width: 640px) {
@@ -489,5 +506,10 @@ button {
 
   .ob-actions .ob-btn {
     width: 100%;
+  }
+
+  .ob-actions .ob-skip {
+    align-self: center;
+    width: auto;
   }
 }

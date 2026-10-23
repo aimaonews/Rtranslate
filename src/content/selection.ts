@@ -39,7 +39,16 @@ function removePopup() {
 function getSelectionText(): string {
   const sel = window.getSelection()
   if (!sel || sel.isCollapsed) return ''
-  return sel.toString().trim()
+  // 排除我们注入的译文元素：整页翻译后选区可能包含 tv-translation 子树，其文本会混入选区
+  let text = ''
+  for (let i = 0; i < sel.rangeCount; i++) {
+    const range = sel.getRangeAt(i)
+    const frag = range.cloneContents()
+    // 克隆的 DocumentFragment 中移除扩展注入节点后再取文本
+    frag.querySelectorAll?.('tv-translation, [data-tv-owned]').forEach((n) => n.remove())
+    text += frag.textContent ?? ''
+  }
+  return text.replace(/\s+/g, ' ').trim()
 }
 
 function contextAroundSelection(text: string): string {

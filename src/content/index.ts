@@ -3,7 +3,7 @@ import { PageTranslator } from './page'
 import { initSelection, setSelectionConfig } from './selection'
 import { initHover, setHoverConfig } from './hover'
 import { initInput, setInputConfig } from './input'
-import { initFloatingBall, updateBallState } from './floatingBall'
+import { toggleFloatingBall, updateBallState } from './floatingBall'
 import { initCompareWindow } from './compareWindow'
 import { applyHighlights } from './highlight'
 import { detectPageLang } from '../core/detect'
@@ -55,13 +55,14 @@ function applyConfig(config: Config, first = false) {
     initSelection(config)
     initHover(config)
     initInput(config)
-    initFloatingBall(config.floatingBall.enabled, {
-      isActive: () => pageTranslator.isActive(),
-      onToggle: () => void togglePageTranslation(),
-    })
     initCompareWindow()
     void maybeAutoTranslate()
   }
+  // 悬浮球运行时开关（关闭即移除，开启即创建，无需刷新）
+  toggleFloatingBall(config.floatingBall.enabled, {
+    isActive: () => pageTranslator.isActive(),
+    onToggle: () => void togglePageTranslation(),
+  })
   if (config.learning.enabled && config.learning.highlightOnPage) void applyHighlights(true)
 }
 

@@ -378,7 +378,8 @@ select {
   align-items: center;
   justify-content: flex-end;
   gap: var(--tv-space-2);
-  margin-top: auto;
+  /* 固定间距（原 margin-top:auto 会在内容不足时把 footer 压到底部，留出大片死白） */
+  margin-top: 12px;
   padding: var(--tv-space-3) var(--tv-space-4);
   border-top: 1px solid var(--tv-border);
 }

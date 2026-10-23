@@ -5,7 +5,7 @@ import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const dist = join(dirname(fileURLToPath(import.meta.url)), '..', 'dist')
-for (const page of ['popup', 'options', 'review', 'files', 'onboarding']) {
+for (const page of ['popup', 'options', 'review', 'files', 'onboarding', 'privacy']) {
   const from = join(dist, 'src', page, 'index.html')
   const to = join(dist, `${page}.html`)
   if (existsSync(from)) {

@@ -136,7 +136,7 @@ button {
   color: var(--tv-text-sub);
 }
 
-/* “点击选择文件”：secondary 按钮（白底蓝边，文字级蓝 AA） */
+/* “点击选择文件”：主按钮样式（与“开始翻译”同级：实色品牌蓝白字） */
 .dropzone-btn {
   display: inline-flex;
   align-items: center;
@@ -146,18 +146,20 @@ button {
   padding: 0 var(--tv-space-4);
   font-size: var(--tv-fs-body);
   font-weight: 600;
-  color: var(--tv-primary-text); /* 原 #409eff 蓝字 2.78:1 → #2b6cb0 5.9:1 */
-  background: var(--tv-card);
-  border: 1px solid var(--tv-primary);
+  color: #fff;
+  /* 与 .btn 主按钮同级（#337ecc 白字 3.9:1 AA） */
+  background: var(--tv-primary-strong);
+  border: 1px solid var(--tv-primary-strong);
   border-radius: var(--tv-radius-md);
   cursor: pointer;
   transition:
     background var(--tv-motion-fast),
-    color var(--tv-motion-fast);
+    border-color var(--tv-motion-fast);
 }
 
 .dropzone-btn:hover {
-  background: var(--tv-primary-soft);
+  background: var(--tv-primary-text);
+  border-color: var(--tv-primary-text);
 }
 
 .file-hidden {
@@ -323,7 +325,8 @@ button {
 }
 
 .btn:disabled {
-  opacity: 0.55;
+  /* 禁用态保持蓝底，仅降不透明度；原因见右侧 .translate-hint 小字 */
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
@@ -354,6 +357,12 @@ button {
   align-items: center;
   gap: var(--tv-space-3);
   margin-top: var(--tv-space-4);
+}
+
+/* “请先选择文件”：开始翻译按钮禁用时的原因小字（文件选中后由 main.ts 隐藏） */
+.translate-hint {
+  font-size: var(--tv-fs-caption);
+  color: var(--tv-text-sub);
 }
 
 /* ===== 进度：品牌蓝、6px、胶囊圆角 ===== */

@@ -37,7 +37,7 @@ async function ensureLoaded(): Promise<void> {
       const entries = Object.entries(stored as Record<string, unknown>)
       // 落盘对象保留 LRU 序；超容量截断最旧（保留最新 500 条）
       const keep = entries.length > MAX_ENTRIES ? entries.slice(entries.length - MAX_ENTRIES) : entries
-      for (const [k, v] of keep lru.set(k, String(v))
+      for (const [k, v] of keep) lru.set(k, String(v))
     }
   })()
   return loadPromise
