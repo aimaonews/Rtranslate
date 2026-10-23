@@ -1,6 +1,6 @@
 # Rtranslate — Chrome Web Store 全要素完备度与合规审查报告
 
-> 生成日期：2026-10-23 · 依据《浏览器扩展制作与 Chrome 应用商店上架全要素通用总规范》逐项实测。
+> 生成日期：2026-10-24 · 版本 v0.0.1 · 依据《浏览器扩展制作与 Chrome 应用商店上架全要素通用总规范》逐项实测。
 
 ## 1. ZIP 包与自动化打包脚本核查
 
@@ -8,7 +8,7 @@
 |---|---|
 | 打包脚本 | `npm run zip`（build + `scripts/zip-dist.mjs`，JSZip 仅打包 `dist/` 内容）✅ |
 | manifest.json 位置 | 压缩包根目录（脚本内置校验，缺失即报错退出）✅ |
-| 产出 | `release/rtranslate-0.1.0.zip`（267 个文件）✅ |
+| 产出 | `release/rtranslate-0.0.1.zip`（271 个文件）✅ |
 | 纯净度 | 无 node_modules/ .git/ *.map/ *.ts 源码/ .DS_Store ✅ |
 | JSON 合法性 | manifest.json 与全部 messages.json 由 JSON 解析器生成/校验，零注释零尾逗号 ✅ |
 

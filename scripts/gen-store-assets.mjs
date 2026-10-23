@@ -6,7 +6,7 @@ import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
-const shots = join(root, 'scripts', 'e2e', 'audit-after')
+const shots = join(root, 'scripts', 'e2e', 'audit')
 const outShots = join(root, 'store-assets', 'screenshots')
 const outPromo = join(root, 'store-assets', 'promo')
 mkdirSync(outShots, { recursive: true })
