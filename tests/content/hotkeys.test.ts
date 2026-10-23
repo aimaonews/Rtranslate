@@ -76,7 +76,7 @@ describe('matchHotkey', () => {
     expect(matchHotkey(kev('KeyT', { alt: true }), 'Alt+D')).toBe(false)
   })
 
-  it('Mac 上 Meta 与 CTRL 等价：规格 Ctrl 按 Cmd 命中，反之亦然', () => {
+  it('Mac 上 Meta 与 Ctrl 等价：规格 Ctrl 按 Cmd 命中，反之亦然', () => {
     expect(matchHotkey(kev('KeyD', { meta: true, shift: true }), 'Ctrl+Shift+D')).toBe(true)
     expect(matchHotkey(kev('KeyT', { ctrl: true }), 'Meta+T')).toBe(true)
     // 但规格无 Ctrl/Meta 时，多按 Cmd 仍不命中
