@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Local reference projects (not part of this extension)
+reference/
+
+# E2E browser profiles and generated artifacts
+scripts/e2e/profile*/
+scripts/e2e/audit*/
+scripts/e2e/shot-*.png
+scripts/e2e/screenshot-*.png
+scripts/e2e/*.json
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# pdfjs 第三方运行时资产（npm run build 时由 scripts/sync-pdfjs-assets.mjs 自动恢复）
+public/pdfjs/
+public/pdf.worker.min.js
