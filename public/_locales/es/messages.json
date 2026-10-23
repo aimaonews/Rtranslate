@@ -5,11 +5,11 @@
   },
   "extShortName": {
     "message": "Rtranslate",
-    "description": "Nombre corto de la extensión (max. 12 caracteres)"
+    "description": "Nombre corto de la extensión (máx. 12 caracteres)"
   },
   "extDescription": {
     "message": "Traducción bilingüe de código abierto: multi-motor, enmascaramiento local de datos, tarjetas FSRS. Sin cuenta, sin telemetría.",
-    "description": "Descripción corta de la extensión (max. 132 caracteres)"
+    "description": "Descripción corta de la extensión (máx. 132 caracteres)"
   },
   "actionTitle": {
     "message": "Rtranslate",

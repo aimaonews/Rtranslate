@@ -270,7 +270,7 @@ tv-translation.tv-style-frosted .tv-tr-inner {
 /* primary（蓝底白字 #337ecc）：☆ 收藏（紧邻朗读之前，即倒数第 4；4 按钮精简态下
    倒数第 4 是 AI 解析，由 :not(:first-child) 排除）。置后以便与 secondary 命中
    同一按钮时（写作/收藏仅开其一的 5 按钮态）由本规则胜出。
-   .tv-sel-primary 为 JS 侧既有类名（写作面板“替换选区”），同样式。 */
+   .tv-sel-primary 为 JS 侧既有类名（写作面板"替换选区"），同样式。 */
 .tv-sel-btn.tv-sel-primary,
 .tv-sel-actions > .tv-sel-btn:nth-last-child(4):not(:first-child) {
   background: var(--tv-primary-strong);
