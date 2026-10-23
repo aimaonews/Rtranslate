@@ -9,7 +9,7 @@
 | KISS Translator | 佔位符富文本序列化（`{{n}}` 保留行內結構）、LLM 批次翻譯（編號 JSON 協定）、選取/滑鼠懸停/輸入框翻譯 |
 | FluentRead | 分層架構（core 純邏輯、零瀏覽器 API）、AI 閱讀助理（釋義/文法/用法/練習） |
 | Read Frog | 單字本 + 擴充功能內建 FSRS 字卡複習（ts-fsrs）、頁面單字高亮 |
-| Interline | 免 Key 開箱即用的引擎、13 種譯文樣式、快取 key 依術語表簽祠自動失效 |
+| Interline | 免 Key 開箱即用的引擎、13 種譯文樣式、快取 key 依術語表簽章自動失效 |
 | OpenImmersive Translator | 本機 PII 遮罩（`__PII_*__` 佔位符 + 容錯還原）、免費引擎鏈 + 60 秒冷卻容錯移轉 |
 | MTranBrowser | IntersectionObserver 檢視區驅動翻譯、計算樣式複製（譯文排版與原文一致）、懸停翻譯快速鍵、懸浮球 |
 
@@ -83,7 +83,7 @@ node scripts/e2e/drive.mjs                        # 六階段：整頁/選取/�
 - **可讀程式碼**：`npm run build:store` 產出未壓縮的送審包
 - **隱私權政策**：[PRIVACY.md](../PRIVACY.md)（送審前部署至公開 URL）
 - **商店資訊**：[store-assets/listing.md](../store-assets/listing.md) 與 [docs/store-listing/](./store-listing/)（zh_CN/en）
-- **10 語言中繼資料**：`_locales/`，manifest 內使用 `__MSG_` 佔位符
+- **10 語言中繿資料**：`_locales/`，manifest 內使用 `__MSG_` 佔位符
 
 ## 路線圖（尚未實作）
 

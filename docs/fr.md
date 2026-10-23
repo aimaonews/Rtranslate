@@ -20,7 +20,7 @@ Une extension de navigateur Manifest V3, reconstruite en reprenant le meilleur d
 - **Sous-titres de vidéos et de réunions** : sous-titres YouTube bilingues (analyse json3/XML, re-segmentation ASR, anticipation de 30 s) ; traduction en direct des sous-titres pour Google Meet / Teams / Zoom
 - **Multi-moteurs** : chaîne gratuite Google/Microsoft/MyMemory avec basculement automatique ; DeepL ; points de terminaison compatibles OpenAI (OpenAI/DeepSeek/n'importe quelle API compatible) ; Claude ; Gemini ; LibreTranslate (auto-hébergeable) ; protocole JSON personnalisé ; AI Mao (notre service hébergé)
 - **Experts IA** : stratégies de traduction par prompts personnalisés, avec 5 préréglages intégrés (général/technique/littéraire/académique/réseaux sociaux)
-- **Bibliothèques terminologiques IA** : 6 glossaires spécialisés intégrés (programmation/Web3/Twitter/AO3/éducation/jeux vidéo, issus d'immersive-translate/term) + bibliothèques personnalisées + extraction de termes par IA
+- **Bibliothèques terminologiques IA** : 6 glossaires spécialisés intégrés (programmation/Web3/Twitter/AO3/éducation/jeux vidéo, issus d'immersive-translate/terms) + bibliothèques personnalisées + extraction de termes par IA
 - **Rédaction IA** : polir/continuer/résumer/répondre/traduire depuis la bulle de sélection, avec contrôle du ton et de la longueur
 - **Traduction par lots** : les moteurs IA regroupent plusieurs paragraphes en une seule requête — plus rapide et moins cher
 - **Protection de la vie privée** : masquage local optionnel des PII — e-mails/numéros de téléphone/cartes bancaires/numéros de pièce d'identité/clés API sont masqués localement avant l'envoi et restaurés après la traduction
