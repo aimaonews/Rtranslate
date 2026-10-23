@@ -1,0 +1,493 @@
+/* Rtranslate — 首次安装引导页样式（设计系统 tokens 版，居中卡片向导）。
+   颜色/字阶/圆角/间距/阴影/动效全部来自 src/shared/ui/tokens.css，本地不再重定义。 */
+@import '../shared/ui/tokens.css';
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--tv-font);
+  font-size: var(--tv-fs-body);
+  line-height: 1.6;
+  color: var(--tv-text);
+  background:
+    radial-gradient(1200px 600px at 50% -10%, var(--tv-primary-soft), transparent 60%),
+    var(--tv-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* ===== 布局：居中卡片（max-width 720px） ===== */
+
+.ob-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--tv-space-6) var(--tv-space-4) 48px;
+}
+
+.ob-card {
+  width: 100%;
+  max-width: 720px;
+  background: var(--tv-card);
+  border: 1px solid var(--tv-border);
+  border-radius: var(--tv-radius-lg);
+  box-shadow: var(--tv-shadow-lg);
+  padding: var(--tv-space-5) var(--tv-space-6) var(--tv-space-6);
+}
+
+/* ===== 顶部：品牌 + 3 段进度条 ===== */
+
+.ob-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tv-space-4);
+  margin-bottom: var(--tv-space-5);
+}
+
+.ob-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tv-space-2);
+}
+
+.ob-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--tv-radius-sm);
+}
+
+.ob-brand-name {
+  font-size: var(--tv-fs-card-title);
+  font-weight: 700;
+  color: var(--tv-primary-text);
+  letter-spacing: 0.3px;
+}
+
+.ob-progress {
+  display: flex;
+  gap: var(--tv-space-2);
+}
+
+.ob-progress-seg {
+  flex: 1;
+  height: 6px;
+  border-radius: var(--tv-radius-pill);
+  background: var(--tv-primary-soft);
+  transition: background var(--tv-motion-base);
+}
+
+.ob-progress-seg.is-done {
+  background: color-mix(in srgb, var(--tv-primary) 45%, var(--tv-primary-soft));
+}
+
+.ob-progress-seg.is-active {
+  background: var(--tv-primary);
+}
+
+/* ===== 步骤公共 ===== */
+
+.ob-step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tv-space-4);
+}
+
+.ob-step-title {
+  margin: 0;
+  font-size: var(--tv-fs-page-title);
+  font-weight: 700;
+  color: var(--tv-text);
+  text-align: center;
+}
+
+.ob-step-desc {
+  margin: calc(-1 * var(--tv-space-2)) 0 0;
+  font-size: var(--tv-fs-body);
+  color: var(--tv-text-sub);
+  text-align: center;
+}
+
+/* ===== Step 1：设置项 ===== */
+
+.ob-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tv-space-2);
+}
+
+.ob-field-label {
+  font-size: var(--tv-fs-sub);
+  font-weight: 600;
+  color: var(--tv-text);
+}
+
+.ob-select {
+  width: 100%;
+  padding: 9px var(--tv-space-3);
+  font-size: var(--tv-fs-body);
+  font-family: inherit;
+  color: var(--tv-text);
+  background: var(--tv-card);
+  border: 1px solid var(--tv-border-strong);
+  border-radius: var(--tv-radius-md);
+  transition: border-color var(--tv-motion-fast);
+}
+
+.ob-select:focus {
+  border-color: var(--tv-primary);
+}
+
+/* 引擎自定义下拉（16px 图标） */
+
+.ob-engine {
+  position: relative;
+}
+
+.ob-engine-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--tv-space-2);
+  padding: 9px var(--tv-space-3);
+  font-size: var(--tv-fs-body);
+  color: var(--tv-text);
+  background: var(--tv-card);
+  border: 1px solid var(--tv-border-strong);
+  border-radius: var(--tv-radius-md);
+  cursor: pointer;
+  transition: border-color var(--tv-motion-fast);
+}
+
+.ob-engine-btn:hover {
+  border-color: var(--tv-primary);
+}
+
+.ob-engine-icon {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  border-radius: 3px;
+}
+
+.ob-engine-name {
+  flex: 1;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ob-caret {
+  width: 0;
+  height: 0;
+  flex: none;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid var(--tv-text-sub);
+}
+
+.ob-engine-list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  display: none;
+  max-height: 260px;
+  margin: 0;
+  padding: var(--tv-space-1);
+  overflow-y: auto;
+  list-style: none;
+  background: var(--tv-card);
+  border: 1px solid var(--tv-border);
+  border-radius: var(--tv-radius-md);
+  box-shadow: var(--tv-shadow-lg);
+}
+
+.ob-engine.open .ob-engine-list {
+  display: block;
+}
+
+.ob-engine-item {
+  display: flex;
+  align-items: center;
+  gap: var(--tv-space-2);
+  padding: 8px var(--tv-space-3);
+  font-size: var(--tv-fs-body);
+  border-radius: var(--tv-radius-sm);
+  cursor: pointer;
+  transition: background var(--tv-motion-fast);
+}
+
+.ob-engine-item:hover {
+  background: var(--tv-primary-softer);
+}
+
+.ob-engine-item.is-selected {
+  background: var(--tv-primary-soft);
+  color: var(--tv-primary-text);
+  font-weight: 600;
+}
+
+.ob-engine-item-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 显示模式单选卡片 */
+
+.ob-radio-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--tv-space-3);
+}
+
+.ob-radio-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--tv-space-2);
+  padding: var(--tv-space-3) var(--tv-space-4);
+  border: 1px solid var(--tv-border-strong);
+  border-radius: var(--tv-radius-md);
+  cursor: pointer;
+  transition:
+    border-color var(--tv-motion-fast),
+    background var(--tv-motion-fast);
+}
+
+.ob-radio-item:hover {
+  border-color: var(--tv-primary);
+}
+
+.ob-radio-item:has(input:checked) {
+  border-color: var(--tv-primary);
+  background: var(--tv-primary-softer);
+}
+
+.ob-radio-item input[type='radio'] {
+  width: 16px;
+  height: 16px;
+  margin: 3px 0 0;
+  accent-color: var(--tv-primary);
+}
+
+.ob-radio-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ob-radio-label {
+  font-size: var(--tv-fs-body);
+  font-weight: 600;
+}
+
+.ob-radio-desc {
+  font-size: var(--tv-fs-caption);
+  color: var(--tv-text-sub);
+}
+
+/* ===== Step 2：固定到工具栏指引 ===== */
+
+.ob-pin-steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tv-space-3);
+  padding: var(--tv-space-2) 0;
+}
+
+.ob-pin-step {
+  display: flex;
+  align-items: center;
+  gap: var(--tv-space-3);
+  padding: var(--tv-space-3) var(--tv-space-4);
+  background: var(--tv-primary-softer);
+  border: 1px solid var(--tv-border);
+  border-radius: var(--tv-radius-md);
+}
+
+.ob-pin-num {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--tv-fs-sub);
+  font-weight: 700;
+  color: #fff;
+  background: var(--tv-primary);
+  border-radius: var(--tv-radius-pill);
+}
+
+.ob-pin-emoji {
+  flex: none;
+  width: 22px;
+  font-size: 20px;
+  line-height: 1;
+  text-align: center;
+}
+
+.ob-pin-ext-icon {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+}
+
+.ob-pin-text {
+  font-size: var(--tv-fs-body);
+  color: var(--tv-text);
+}
+
+/* ===== Step 3：划词演示 ===== */
+
+.ob-sample-text {
+  margin: 0;
+  padding: var(--tv-space-4) var(--tv-space-5);
+  font-size: var(--tv-fs-card-title);
+  line-height: 1.7;
+  color: var(--tv-text);
+  background: var(--tv-primary-softer);
+  border: 1px dashed var(--tv-primary);
+  border-radius: var(--tv-radius-md);
+  user-select: text;
+  cursor: text;
+}
+
+.ob-demo-result {
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  padding: var(--tv-space-4) var(--tv-space-5);
+  font-size: var(--tv-fs-body);
+  color: var(--tv-text-sub);
+  background: var(--tv-card);
+  border: 1px solid var(--tv-border);
+  border-radius: var(--tv-radius-md);
+  transition:
+    border-color var(--tv-motion-fast),
+    color var(--tv-motion-fast);
+}
+
+.ob-demo-result.is-done {
+  color: var(--tv-text);
+  border-color: var(--tv-primary);
+  background: var(--tv-primary-softer);
+}
+
+.ob-demo-result.is-error {
+  color: var(--tv-danger-text);
+  border-color: var(--tv-danger);
+}
+
+/* ===== 完成态 ===== */
+
+.ob-done {
+  align-items: center;
+  text-align: center;
+  gap: var(--tv-space-3);
+  padding: var(--tv-space-5) 0;
+}
+
+.ob-done-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  color: var(--tv-success);
+}
+
+.ob-done-title {
+  margin: 0;
+}
+
+.ob-done-desc {
+  margin: 0;
+  max-width: 420px;
+}
+
+/* ===== 底部操作按钮 ===== */
+
+.ob-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--tv-space-3);
+  margin-top: var(--tv-space-3);
+}
+
+.ob-actions .ob-btn:only-child {
+  margin-left: auto;
+}
+
+.ob-btn {
+  padding: 10px 24px;
+  font-size: var(--tv-fs-body);
+  font-weight: 600;
+  border-radius: var(--tv-radius-pill);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition:
+    background var(--tv-motion-fast),
+    color var(--tv-motion-fast),
+    border-color var(--tv-motion-fast);
+}
+
+.ob-btn.primary {
+  background: var(--tv-primary-strong);
+  color: #fff;
+}
+
+.ob-btn.primary:hover {
+  background: var(--tv-primary-text);
+}
+
+.ob-btn.primary:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.ob-btn.ghost {
+  background: var(--tv-card);
+  color: var(--tv-text-sub);
+  border-color: var(--tv-border);
+}
+
+.ob-btn.ghost:hover {
+  color: var(--tv-primary-text);
+  border-color: var(--tv-primary);
+}
+
+/* ===== 响应式 ===== */
+
+@media (max-width: 640px) {
+  .ob-card {
+    padding: var(--tv-space-4);
+  }
+
+  .ob-radio-group {
+    grid-template-columns: 1fr;
+  }
+
+  .ob-actions {
+    flex-direction: column-reverse;
+  }
+
+  .ob-actions .ob-btn {
+    width: 100%;
+  }
+}
