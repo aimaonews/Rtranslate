@@ -1,0 +1,30 @@
+{
+  "extName": {
+    "message": "Rtranslate - Zweisprachige Übersetzung",
+    "description": "Name der Erweiterung im Chrome Web Store und unter chrome://extensions (empfohlen max. 45 Zeichen)"
+  },
+  "extShortName": {
+    "message": "Rtranslate",
+    "description": "Kurzname der Erweiterung (max. 12 Zeichen)"
+  },
+  "extDescription": {
+    "message": "Zweisprachige Open-Source-Übersetzung: Multi-Engine, lokale Maskierung, Vokabelkarten. Kein Konto, keine Telemetrie.",
+    "description": "Kurzbeschreibung der Erweiterung (max. 132 Zeichen)"
+  },
+  "actionTitle": {
+    "message": "Rtranslate",
+    "description": "Tooltip des Symbols in der Browser-Symbolleiste"
+  },
+  "toggleCommand": {
+    "message": "Seitenübersetzung umschalten / Original wiederherstellen",
+    "description": "Beschreibung des Tastenkürzels zum Umschalten der Seitenübersetzung"
+  },
+  "menuTogglePage": {
+    "message": "Seitenübersetzung umschalten (Rtranslate)",
+    "description": "Kontextmenü: Übersetzung der aktuellen Seite umschalten"
+  },
+  "menuOptions": {
+    "message": "Rtranslate-Einstellungen",
+    "description": "Kontextmenü: Einstellungsseite der Erweiterung öffnen"
+  }
+}

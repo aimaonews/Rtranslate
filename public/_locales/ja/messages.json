@@ -1,0 +1,30 @@
+{
+  "extName": {
+    "message": "Rtranslate - オープンソース二か国語対訳翻訳",
+    "description": "Chrome ウェブストアおよび chrome://extensions に表示される拡張機能名（45 文字以内推奨）"
+  },
+  "extShortName": {
+    "message": "Rtranslate",
+    "description": "拡張機能の短い名前（12 文字以内）"
+  },
+  "extDescription": {
+    "message": "オープンソースの二か国語対訳翻訳：マルチエンジン、ローカル脱敏、単語フラッシュカード。アカウント不要、テレメトリーなし。",
+    "description": "拡張機能の短い説明（132 文字以内）"
+  },
+  "actionTitle": {
+    "message": "Rtranslate",
+    "description": "ブラウザのツールバーアイコンのツールチップ"
+  },
+  "toggleCommand": {
+    "message": "ページ翻訳の切り替え / 原文に戻す",
+    "description": "ページ翻訳を切り替えるキーボードショートカットの説明"
+  },
+  "menuTogglePage": {
+    "message": "ページ翻訳を切り替え (Rtranslate)",
+    "description": "コンテキストメニュー：現在のページの翻訳を切り替える"
+  },
+  "menuOptions": {
+    "message": "Rtranslate 設定",
+    "description": "コンテキストメニュー：拡張機能の設定ページを開く"
+  }
+}

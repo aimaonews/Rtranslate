@@ -1,0 +1,30 @@
+{
+  "extName": {
+    "message": "Rtranslate - Traduction bilingue open source",
+    "description": "Nom de l'extension dans le Chrome Web Store et chrome://extensions (45 caractères max recommandés)"
+  },
+  "extShortName": {
+    "message": "Rtranslate",
+    "description": "Nom court de l'extension (12 caractères max)"
+  },
+  "extDescription": {
+    "message": "Traduction bilingue open source : multi-moteurs, masquage local des données, cartes mémoire FSRS. Sans compte, sans télémétrie.",
+    "description": "Description courte de l'extension (132 caractères max)"
+  },
+  "actionTitle": {
+    "message": "Rtranslate",
+    "description": "Info-bulle de l'icône dans la barre d'outils du navigateur"
+  },
+  "toggleCommand": {
+    "message": "Activer/désactiver la traduction de la page / Restaurer l'original",
+    "description": "Description du raccourci clavier pour basculer la traduction de la page"
+  },
+  "menuTogglePage": {
+    "message": "Activer/désactiver la traduction (Rtranslate)",
+    "description": "Menu contextuel : basculer la traduction de la page courante"
+  },
+  "menuOptions": {
+    "message": "Paramètres de Rtranslate",
+    "description": "Menu contextuel : ouvrir la page des paramètres de l'extension"
+  }
+}

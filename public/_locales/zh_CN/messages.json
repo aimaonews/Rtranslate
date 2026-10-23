@@ -1,0 +1,30 @@
+{
+  "extName": {
+    "message": "Rtranslate - 开源双语对照翻译",
+    "description": "扩展程序在 Chrome 商店和 chrome://extensions 中显示的名称（不超过 45 个字符）"
+  },
+  "extShortName": {
+    "message": "Rtranslate",
+    "description": "扩展程序的简短名称（不超过 12 个字符）"
+  },
+  "extDescription": {
+    "message": "开源双语对照翻译：多引擎、本地脱敏、生词闪卡。无账号、无遥测。",
+    "description": "扩展程序简短描述（不超过 132 个字符）"
+  },
+  "actionTitle": {
+    "message": "Rtranslate",
+    "description": "浏览器工具栏图标悬停提示"
+  },
+  "toggleCommand": {
+    "message": "切换整页翻译/恢复原文",
+    "description": "切换整页翻译的快捷键描述"
+  },
+  "menuTogglePage": {
+    "message": "切换整页翻译 (Rtranslate)",
+    "description": "右键菜单：切换当前页面的翻译"
+  },
+  "menuOptions": {
+    "message": "Rtranslate 设置",
+    "description": "右键菜单：打开扩展设置页"
+  }
+}

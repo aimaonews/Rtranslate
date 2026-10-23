@@ -1,0 +1,30 @@
+{
+  "extName": {
+    "message": "Rtranslate - Bilingual Translation",
+    "description": "Extension name in Chrome Web Store and chrome://extensions (max 45 chars recommended)"
+  },
+  "extShortName": {
+    "message": "Rtranslate",
+    "description": "Short name of the extension (max 12 chars)"
+  },
+  "extDescription": {
+    "message": "Open-source bilingual translation: multi-engine, local PII masking, wordbook & FSRS flashcards. No account, no telemetry.",
+    "description": "Extension short description (max 132 chars)"
+  },
+  "actionTitle": {
+    "message": "Rtranslate",
+    "description": "Browser action toolbar tooltip"
+  },
+  "toggleCommand": {
+    "message": "Toggle page translation / Restore original",
+    "description": "Keyboard shortcut description for toggling page translation"
+  },
+  "menuTogglePage": {
+    "message": "Toggle page translation (Rtranslate)",
+    "description": "Context menu item: toggle translation of the current page"
+  },
+  "menuOptions": {
+    "message": "Rtranslate Settings",
+    "description": "Context menu item: open the extension options page"
+  }
+}

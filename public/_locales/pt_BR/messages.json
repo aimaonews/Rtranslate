@@ -1,0 +1,30 @@
+{
+  "extName": {
+    "message": "Rtranslate - Tradução bilíngue",
+    "description": "Nome da extensão na Chrome Web Store e em chrome://extensions (máx. 45 caracteres recomendado)"
+  },
+  "extShortName": {
+    "message": "Rtranslate",
+    "description": "Nome curto da extensão (máx. 12 caracteres)"
+  },
+  "extDescription": {
+    "message": "Tradução bilíngue de código aberto: multi-mecanismos, mascaramento local de dados, cartões FSRS. Sem conta, sem telemetria.",
+    "description": "Descrição curta da extensão (máx. 132 caracteres)"
+  },
+  "actionTitle": {
+    "message": "Rtranslate",
+    "description": "Dica do ícone na barra de ferramentas do navegador"
+  },
+  "toggleCommand": {
+    "message": "Alternar tradução da página / Restaurar original",
+    "description": "Descrição do atalho de teclado para alternar a tradução da página"
+  },
+  "menuTogglePage": {
+    "message": "Alternar tradução da página (Rtranslate)",
+    "description": "Menu de contexto: alternar a tradução da página atual"
+  },
+  "menuOptions": {
+    "message": "Configurações do Rtranslate",
+    "description": "Menu de contexto: abrir a página de configurações da extensão"
+  }
+}
