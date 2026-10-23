@@ -14,7 +14,7 @@ describe("normalizeText", () => {
   });
   it("折叠全角空格 U+3000 与 NBSP", () => {
     expect(normalizeText("a　b　　c")).toBe("a b c");
-    expect(normalizeText("a b")).toBe("a b");
+    expect(normalizeText("a b")).toBe("a b");
   });
   it("trim 首尾空白", () => {
     expect(normalizeText("  hello  ")).toBe("hello");

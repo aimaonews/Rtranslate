@@ -39,7 +39,7 @@ function llmCtx(patch?: (c: Config) => void): EngineContext {
 describe('stripThinking', () => {
   it('剥离 <think> 块并 trim', () => {
     expect(stripThinking('<think>推理过程</think>译文')).toBe('译文')
-    expect(stripThinking('   <think>推理</think>  译文  ')).toBe('译文')
+    expect(stripThinking('  <think>推理</think>  译文  ')).toBe('译文')
   })
 
   it('跨行思维链也剥离', () => {

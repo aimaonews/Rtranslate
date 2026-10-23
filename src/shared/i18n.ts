@@ -96,6 +96,7 @@ const EN: Record<string, string> = {
   'popup.review': 'Start review',
   'popup.tutorial': 'Tutorial',
   'nav.guide': 'Reopen setup guide',
+  'nav.privacy': 'Privacy Policy',
   'popup.openSettings': 'Open settings',
   'popup.statusLoading': 'Detecting page state…',
   'popup.statusIdle': 'Page not translated',

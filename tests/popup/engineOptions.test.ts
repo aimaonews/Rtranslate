@@ -57,7 +57,7 @@ describe('引擎图标映射', () => {
     expect(engineIconFor('custom:')).toBe('engine-icons/custom.svg')
   })
 
-  it('未知 id 兑底 custom.svg', () => {
+  it('未知 id 兜底 custom.svg', () => {
     expect(engineIconFor('nonexistent')).toBe(ENGINE_ICON_FILES.custom)
   })
 

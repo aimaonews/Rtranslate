@@ -4,7 +4,7 @@
  * 通用标签页 + 界面语言（uiLang）测试：
  * - 通用页无「源语言」卡片，新增「界面语言」下拉（简体中文/English，写 config.uiLang）
  * - zh-CN 时导航标签与现状完全一致；切换 en 后导航标签/页标题/通用页标签即时变英文
- * - 引擎标签页只有 2 张卡片（翻译引擎、批量翻译），超时输入在引擎大卡片内、测试连接按钮上方
+ * - 引擎标签页只有 2 张卡片（引擎选择、批量翻译），超时输入在引擎大卡片内、测试连接按钮上方
  *
  * main.ts 在 document 存在时自动 init()，因此每个用例先装 chrome stub 再动态 import。
  */
@@ -178,14 +178,14 @@ describe("通用标签页", () => {
     ).toBe("en");
   });
 
-  it("引擎标签页只有 2 张卡片（翻译引擎、批量翻译），超时输入在引擎卡片内、测试连接按钮上方", async () => {
+  it("引擎标签页只有 2 张卡片（引擎选择、批量翻译），超时输入在引擎卡片内、测试连接按钮上方", async () => {
     await boot(structuredClone(DEFAULT_CONFIG));
     qs<HTMLButtonElement>('[data-tab="engine"]').click();
     await flush();
 
     const cards = document.querySelectorAll(".content > .card");
     expect(cards.length).toBe(2);
-    expect(cards[0].querySelector(".card-title")?.textContent).toBe("翻译引擎");
+    expect(cards[0].querySelector(".card-title")?.textContent).toBe("引擎选择");
     expect(cards[1].querySelector(".card-title")?.textContent).toBe("批量翻译");
     expect(cardTitles()).not.toContain("请求超时");
 

@@ -18,6 +18,7 @@ export default defineConfig({
         review: resolve(__dirname, 'src/review/index.html'),
         files: resolve(__dirname, 'src/files/index.html'),
         onboarding: resolve(__dirname, 'src/onboarding/index.html'),
+        privacy: resolve(__dirname, 'src/privacy/index.html'),
       },
       output: {
         entryFileNames: '[name].js',

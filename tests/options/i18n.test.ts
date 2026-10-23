@@ -4,7 +4,7 @@
  * 10 语言国际化测试：
  * - resolveUiLang 各分支（auto→浏览器语言映射 / 未知回退 en；显式语言直返）
  * - UI_LANGS 顺序与数量（10 项，auto 第一，한국어 最后）
- * - de/es/fr/pt-BR/ja/zh-TW/ko 七语言字典键集合与 EN 键集合一致（无缺漏、无多餘键），
+ * - de/es/fr/pt-BR/ja/zh-TW/ko 七语言字典键集合与 EN 键集合一致（无缺漏、无多馀键），
  *   en 字典用 t() 哨兵探针验证键齐全；{n}/{m}/{w}/{d} 占位符保留
  * - 通用页「界面语言」下拉渲染 10 项，切换后按 resolveUiLang 解析后的语言即时重渲染
  *
@@ -64,6 +64,7 @@ const EXPECTED_KEYS = [
   "popup.review",
   "popup.tutorial",
   "nav.guide",
+  "nav.privacy",
   "popup.openSettings",
   "popup.statusLoading",
   "popup.statusIdle",
@@ -243,13 +244,13 @@ const REGISTERED_DICTS: ReadonlyArray<[ResolvedLang, Record<string, string>]> = 
 
 describe("字典键集合与 EN 一致", () => {
   it("EN 字典（i18n.ts 注册）覆盖全部 82 键（哨兵探针）", () => {
-    const SENTINEL = "MISSING";
+    const SENTINEL = "MISSING";
     for (const key of EXPECTED_KEYS) {
       expect(t(key, "en", SENTINEL)).not.toBe(SENTINEL);
     }
   });
 
-  it.each(REGISTERED_DICTS)("%s：键集合与 EN 完全一致（无缺漏、无多餘键）", (_lang, dict) => {
+  it.each(REGISTERED_DICTS)("%s：键集合与 EN 完全一致（无缺漏、无多馀键）", (_lang, dict) => {
     expect(Object.keys(dict).sort()).toEqual([...EXPECTED_KEYS].sort());
   });
 
