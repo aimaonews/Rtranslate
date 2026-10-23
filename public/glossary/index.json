@@ -1,0 +1,12 @@
+{
+  "source": "https://github.com/immersive-translate/terms",
+  "note": "内置术语库数据来自沉浸式翻译社区术语表项目（immersive-translate/terms），CSV 格式为 source,target,tgt_lng，仅保留 tgt_lng 为 zh-CN 的行。该仓库未声明 License，在此注明出处。",
+  "libraries": [
+    { "id": "programming", "name": "Programming", "zhName": "编程", "file": "programming_zh-CN.csv" },
+    { "id": "web3", "name": "Web3", "zhName": "Web3", "file": "web3_zh-CN.csv" },
+    { "id": "twitter", "name": "Twitter", "zhName": "推特", "file": "twitter_zh-CN.csv" },
+    { "id": "ao3", "name": "AO3", "zhName": "AO3", "file": "ao3_zh-CN.csv" },
+    { "id": "education", "name": "Education", "zhName": "教育", "file": "education_zh-CN.csv" },
+    { "id": "game", "name": "Game", "zhName": "游戏", "file": "game_zh-CN.csv" }
+  ]
+}
