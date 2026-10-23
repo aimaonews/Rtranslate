@@ -1,0 +1,30 @@
+{
+  "extName": {
+    "message": "Rtranslate - 오픈소스 이중언어 번역",
+    "description": "Chrome 웹 스토어 및 chrome://extensions에 표시되는 확장 프로그램 이름(45자 이내 권장)"
+  },
+  "extShortName": {
+    "message": "Rtranslate",
+    "description": "확장 프로그램의 짧은 이름(12자 이내)"
+  },
+  "extDescription": {
+    "message": "오픈소스 이중언어 번역: 멀티 엔진, 로컬 민감정보 마스킹, 단어 플래시카드. 계정 불필요, 텔레메트리 없음.",
+    "description": "확장 프로그램의 짧은 설명(132자 이내)"
+  },
+  "actionTitle": {
+    "message": "Rtranslate",
+    "description": "브라우저 툴바 아이콘의 도구 설명"
+  },
+  "toggleCommand": {
+    "message": "페이지 번역 전환 / 원문 복원",
+    "description": "페이지 번역을 전환하는 키보드 단축키 설명"
+  },
+  "menuTogglePage": {
+    "message": "페이지 번역 전환 (Rtranslate)",
+    "description": "컨텍스트 메뉴: 현재 페이지의 번역 전환"
+  },
+  "menuOptions": {
+    "message": "Rtranslate 설정",
+    "description": "컨텍스트 메뉴: 확장 프로그램 설정 페이지 열기"
+  }
+}

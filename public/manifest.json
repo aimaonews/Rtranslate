@@ -1,0 +1,90 @@
+{
+  "manifest_version": 3,
+  "name": "__MSG_extName__",
+  "short_name": "__MSG_extShortName__",
+  "version": "0.1.0",
+  "description": "__MSG_extDescription__",
+  "minimum_chrome_version": "116",
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "content.css"
+      ],
+      "run_at": "document_idle",
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "*://www.youtube.com/*",
+        "*://meet.google.com/*",
+        "*://teams.microsoft.com/*",
+        "*://*.zoom.us/*"
+      ],
+      "js": [
+        "subtitles.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "__MSG_actionTitle__",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "permissions": [
+    "storage",
+    "contextMenus"
+  ],
+  "host_permissions": [
+    "https://translate.googleapis.com/",
+    "https://edge.microsoft.com/",
+    "https://api.cognitive.microsofttranslator.com/",
+    "https://api.mymemory.translated.net/",
+    "https://api-free.deepl.com/",
+    "https://api.deepl.com/",
+    "https://api.openai.com/",
+    "https://api.aimao.today/",
+    "https://api.deepseek.com/",
+    "https://api.anthropic.com/",
+    "https://generativelanguage.googleapis.com/",
+    "https://libretranslate.com/"
+  ],
+  "optional_host_permissions": [
+    "https://*/*",
+    "http://*/*"
+  ],
+  "commands": {
+    "toggle-translation": {
+      "suggested_key": {
+        "default": "Alt+T"
+      },
+      "description": "__MSG_toggleCommand__"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "default_locale": "en"
+}

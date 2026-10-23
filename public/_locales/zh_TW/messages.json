@@ -1,0 +1,30 @@
+{
+  "extName": {
+    "message": "Rtranslate - 開源雙語對照翻譯",
+    "description": "擴充功能在 Chrome 商店和 chrome://extensions 中顯示的名稱（不超過 45 個字元）"
+  },
+  "extShortName": {
+    "message": "Rtranslate",
+    "description": "擴充功能的簡短名稱（不超過 12 個字元）"
+  },
+  "extDescription": {
+    "message": "開源雙語對照翻譯：多引擎、本機脫敏、生字閃卡。無帳號、無遙測。",
+    "description": "擴充功能簡短描述（不超過 132 個字元）"
+  },
+  "actionTitle": {
+    "message": "Rtranslate",
+    "description": "瀏覽器工具列圖示懸停提示"
+  },
+  "toggleCommand": {
+    "message": "切換整頁翻譯/還原原文",
+    "description": "切換整頁翻譯的快速鍵描述"
+  },
+  "menuTogglePage": {
+    "message": "切換整頁翻譯 (Rtranslate)",
+    "description": "右鍵選單：切換目前頁面的翻譯"
+  },
+  "menuOptions": {
+    "message": "Rtranslate 設定",
+    "description": "右鍵選單：開啟擴充功能設定頁"
+  }
+}
