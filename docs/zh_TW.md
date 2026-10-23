@@ -83,7 +83,7 @@ node scripts/e2e/drive.mjs                        # 六階段：整頁/選取/�
 - **可讀程式碼**：`npm run build:store` 產出未壓縮的送審包
 - **隱私權政策**：[PRIVACY.md](../PRIVACY.md)（送審前部署至公開 URL）
 - **商店資訊**：[store-assets/listing.md](../store-assets/listing.md) 與 [docs/store-listing/](./store-listing/)（zh_CN/en）
-- **10 語言中繿資料**：`_locales/`，manifest 內使用 `__MSG_` 佔位符
+- **10 語言中繼資料**：`_locales/`，manifest 內使用 `__MSG_` 佔位符
 
 ## 路線圖（尚未實作）
 
