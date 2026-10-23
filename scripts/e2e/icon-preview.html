@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>TransVerse 图标预览</title>
+<style>
+  body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f7f9fa; color: #1e293b; margin: 0; padding: 40px; }
+  h1 { font-size: 22px; margin: 0 0 8px; }
+  p.sub { color: #64748b; margin: 0 0 28px; }
+  .row { display: flex; gap: 28px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 36px; }
+  .cell { text-align: center; }
+  .cell .label { font-size: 12px; color: #64748b; margin-top: 8px; }
+  .frame {
+    display: inline-block; padding: 12px; border-radius: 12px;
+    background:
+      linear-gradient(45deg, #e2e8f0 25%, transparent 25%, transparent 75%, #e2e8f0 75%) 0 0/16px 16px,
+      linear-gradient(45deg, #e2e8f0 25%, #fff 25%, #fff 75%, #e2e8f0 75%) 8px 8px/16px 16px;
+  }
+  .frame.dark { background: #1e293b; }
+  .frame.blue { background: #409eff; }
+  img { display: block; }
+  h2 { font-size: 15px; color: #475569; margin: 24px 0 12px; font-weight: 600; }
+</style>
+</head>
+<body>
+  <h1>TransVerse 译境 · Logo 圆角裁切预览</h1>
+  <p class="sub">圆角半径 22% · 棋盘格用于观察透明区域 · 源图 aimao_translate.png (767×767)</p>
+
+  <h2>棋盘格背景（看透明圆角）</h2>
+  <div class="row">
+    <div class="cell"><span class="frame"><img src="../../dist/icons/icon16.png" width="16" height="16"></span><div class="label">16×16</div></div>
+    <div class="cell"><span class="frame"><img src="../../dist/icons/icon48.png" width="48" height="48"></span><div class="label">48×48</div></div>
+    <div class="cell"><span class="frame"><img src="../../dist/icons/icon128.png" width="128" height="128"></span><div class="label">128×128</div></div>
+    <div class="cell"><span class="frame"><img src="../../dist/icons/icon256.png" width="256" height="256"></span><div class="label">256×256</div></div>
+    <div class="cell"><span class="frame"><img src="../../dist/icons/icon512.png" width="512" height="512" style="width:192px;height:192px"></span><div class="label">512×512</div></div>
+  </div>
+
+  <h2>深色背景</h2>
+  <div class="row">
+    <div class="cell"><span class="frame dark"><img src="../../dist/icons/icon48.png" width="48" height="48"></span><div class="label">48×48</div></div>
+    <div class="cell"><span class="frame dark"><img src="../../dist/icons/icon128.png" width="128" height="128"></span><div class="label">128×128</div></div>
+    <div class="cell"><span class="frame dark"><img src="../../dist/icons/icon256.png" width="256" height="256"></span><div class="label">256×256</div></div>
+  </div>
+
+  <h2>品牌蓝背景（#409EFF）</h2>
+  <div class="row">
+    <div class="cell"><span class="frame blue"><img src="../../dist/icons/icon48.png" width="48" height="48"></span><div class="label">48×48</div></div>
+    <div class="cell"><span class="frame blue"><img src="../../dist/icons/icon128.png" width="128" height="128"></span><div class="label">128×128</div></div>
+    <div class="cell"><span class="frame blue"><img src="../../dist/icons/icon256.png" width="256" height="256"></span><div class="label">256×256</div></div>
+  </div>
+</body>
+</html>
