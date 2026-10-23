@@ -1,0 +1,84 @@
+/* Rtranslate 设计系统 tokens — 所有页面与注入样式的唯一来源。
+   品牌主色 #409EFF（AIMAO 蓝）仅用于填充/焦点/图标；文字级蓝用 #2B6CB0（AA 合规）。 */
+
+:root {
+  /* 颜色 */
+  --tv-primary: #409eff; /* 品牌填充：开关开态、焦点环、图标、激活底 */
+  --tv-primary-strong: #337ecc; /* 主按钮底、hover 深化（白字 3.9:1，粗体大字合规） */
+  --tv-primary-text: #2b6cb0; /* 文字级蓝（白底 5.9:1，AA） */
+  --tv-primary-soft: #ecf5ff; /* 浅蓝底：选中态、提示 */
+  --tv-primary-softer: #f5faff;
+
+  --tv-text: #1e293b;
+  --tv-text-sub: #64748b;
+  --tv-text-faint: #94a3b8;
+
+  --tv-bg: #f7f9fa;
+  --tv-card: #ffffff;
+  --tv-border: #e4e7ed;
+  --tv-border-strong: #d4d9e2;
+
+  --tv-danger: #f56c6c;
+  --tv-danger-text: #c4564a; /* 文字级红（AA） */
+  --tv-warning: #e6a23c;
+  --tv-success: #67c23a;
+
+  /* 字阶 */
+  --tv-fs-caption: 12px;
+  --tv-fs-sub: 13px;
+  --tv-fs-body: 14px;
+  --tv-fs-card-title: 15px;
+  --tv-fs-page-title: 21px;
+  --tv-fs-display: 28px;
+
+  /* 圆角 */
+  --tv-radius-sm: 6px;
+  --tv-radius-md: 10px;
+  --tv-radius-lg: 14px;
+  --tv-radius-pill: 999px;
+
+  /* 间距 */
+  --tv-space-1: 4px;
+  --tv-space-2: 8px;
+  --tv-space-3: 12px;
+  --tv-space-4: 16px;
+  --tv-space-5: 24px;
+  --tv-space-6: 32px;
+
+  /* 阴影 */
+  --tv-shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06);
+  --tv-shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+  --tv-shadow-lg: 0 10px 32px rgba(15, 23, 42, 0.14);
+
+  /* 动效 */
+  --tv-motion-fast: 150ms ease;
+  --tv-motion-base: 200ms ease;
+
+  /* 字体 */
+  --tv-font:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+
+  /* 焦点环 */
+  --tv-focus-ring: 0 0 0 2px var(--tv-card), 0 0 0 4px var(--tv-primary);
+}
+
+/* 全局焦点规范 */
+button:focus-visible,
+a:focus-visible,
+select:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: none;
+  box-shadow: var(--tv-focus-ring);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
