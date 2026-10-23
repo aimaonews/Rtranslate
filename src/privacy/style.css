@@ -1,0 +1,75 @@
+@import '../shared/ui/tokens.css';
+
+* { box-sizing: border-box; }
+
+body {
+  font: 14px/1.75 var(--tv-font);
+  color: var(--tv-text);
+  background: var(--tv-bg);
+  margin: 0;
+}
+
+.wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 36px;
+}
+
+.brand img { width: 36px; height: 36px; }
+
+.brand-name {
+  font-size: var(--tv-fs-page-title);
+  font-weight: 700;
+}
+
+h2 {
+  font-size: var(--tv-fs-card-title);
+  font-weight: 600;
+  margin: 32px 0 12px;
+  color: var(--tv-text);
+}
+
+p, li {
+  color: var(--tv-text-sub);
+  margin: 0 0 12px;
+}
+
+ul { padding-left: 20px; margin: 0 0 16px; }
+
+strong { color: var(--tv-text); }
+
+.updated {
+  font-size: var(--tv-fs-caption);
+  color: var(--tv-text-faint);
+  margin-bottom: 28px;
+}
+
+.lang-switch {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 32px;
+}
+
+.lang-btn {
+  padding: 6px 14px;
+  border: 1px solid var(--tv-border);
+  border-radius: var(--tv-radius-md);
+  background: var(--tv-card);
+  color: var(--tv-text-sub);
+  font: 13px var(--tv-font);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.lang-btn.active, .lang-btn:hover {
+  border-color: var(--tv-primary);
+  color: var(--tv-primary-text);
+  background: var(--tv-primary-soft);
+}
