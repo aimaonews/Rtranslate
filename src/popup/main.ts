@@ -9,7 +9,7 @@
  * 配置写入：{kind:'setConfig',patch}（store 为浅合并，嵌套字段须整对象展开后传入）。
  * 目标语言 / 显示模式 / 译文样式 / 引擎变更后，另向当前 tab 发 {kind:'configChanged',config} 热同步。
  */
-import { LANGS, COMMON_LANG_CODES, langName } from '../core/langs'
+import { LANGS, COMMON_LANG_CODES, langNative } from '../core/langs'
 import { TRANSLATION_STYLES, getStyle } from '../core/styles'
 import type { Config } from '../shared/config'
 import { t } from '../shared/i18n'
@@ -312,7 +312,6 @@ function buildLangSelect(kind: 'source' | 'target'): HTMLSelectElement {
   const sel = el('select', 'control')
   sel.dataset.langKind = kind
   const ui = config.uiLang
-  const nameLang = ui === 'en' ? 'en' : 'zh'
   const commonGroup = el('optgroup')
   commonGroup.label = t('popup.commonLangs', ui, '常用语言')
   const allGroup = el('optgroup')
@@ -321,7 +320,7 @@ function buildLangSelect(kind: 'source' | 'target'): HTMLSelectElement {
   for (const l of LANGS) {
     const opt = el('option')
     opt.value = l.code
-    opt.textContent = langName(l.code, nameLang)
+    opt.textContent = l.code === 'auto' ? t('lang.autoDetect', ui, '自动检测') : langNative(l.code)
     if (commonSet.has(l.code)) commonGroup.append(opt)
     else allGroup.append(opt)
   }

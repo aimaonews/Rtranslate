@@ -12,7 +12,7 @@
  * i18n：UI 文案走 t(key, resolveUiLang(config.uiLang), 中文原文)，onboarding.* 词条在
  * shared/i18n-pages.ts 注册；storage tv:config_v1 中 uiLang 变化时按新语言重渲染。
  */
-import { LANGS, COMMON_LANG_CODES, langName } from '../core/langs'
+import { LANGS, COMMON_LANG_CODES, langNative } from '../core/langs'
 import type { Config } from '../shared/config'
 import { fmt, resolveUiLang, t, type ResolvedLang } from '../shared/i18n'
 import { watchUiLang } from '../shared/i18n-pages'
@@ -197,7 +197,6 @@ function buildProgress(): HTMLElement {
 function buildTargetLangSelect(cfg: Config): HTMLSelectElement {
   const sel = el('select', 'ob-select ob-target-lang')
   sel.setAttribute('aria-label', L('onboarding.field.targetLang', '目标语言'))
-  const nameLang = uiLang === 'en' ? 'en' : 'zh'
   const commonGroup = el('optgroup')
   commonGroup.label = L('onboarding.commonLangs', '常用语言')
   const allGroup = el('optgroup')
@@ -207,7 +206,7 @@ function buildTargetLangSelect(cfg: Config): HTMLSelectElement {
     if (l.code === 'auto') continue // 目标语言不需要自动检测
     const opt = el('option')
     opt.value = l.code
-    opt.textContent = langName(l.code, nameLang)
+    opt.textContent = langNative(l.code)
     if (commonSet.has(l.code)) commonGroup.append(opt)
     else allGroup.append(opt)
   }
@@ -218,7 +217,7 @@ function buildTargetLangSelect(cfg: Config): HTMLSelectElement {
     // 未知语言码：兜底展示原码，避免下拉空白
     const opt = el('option')
     opt.value = current
-    opt.textContent = langName(current, nameLang)
+    opt.textContent = langNative(current)
     commonGroup.append(opt)
     sel.value = current
   }

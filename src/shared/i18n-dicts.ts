@@ -6,6 +6,7 @@ import { registerDict } from './i18n'
 
 // ===== Deutsch =====
 export const DICT_DE: Record<string, string> = {
+  'lang.autoDetect': 'Automatisch erkennen', 'lang.commonGroup': 'Häufig genutzte Sprachen', 'lang.allGroup': 'Alle Sprachen', 'brand.settings': 'Einstellungen',
   // 通用
   'settings': 'Einstellungen',
   'save': 'Speichern',
@@ -101,6 +102,7 @@ export const DICT_DE: Record<string, string> = {
 
 // ===== Español =====
 export const DICT_ES: Record<string, string> = {
+  'lang.autoDetect': 'Detectar automáticamente', 'lang.commonGroup': 'Idiomas frecuentes', 'lang.allGroup': 'Todos los idiomas', 'brand.settings': 'Ajustes',
   // 通用
   'settings': 'Configuración',
   'save': 'Guardar',
@@ -196,6 +198,7 @@ export const DICT_ES: Record<string, string> = {
 
 // ===== Français =====
 export const DICT_FR: Record<string, string> = {
+  'lang.autoDetect': 'Détection auto', 'lang.commonGroup': 'Langues courantes', 'lang.allGroup': 'Toutes les langues', 'brand.settings': 'Paramètres',
   // 通用
   'settings': 'Paramètres',
   'save': 'Enregistrer',
@@ -291,6 +294,7 @@ export const DICT_FR: Record<string, string> = {
 
 // ===== Português (Brasil) =====
 export const DICT_PT_BR: Record<string, string> = {
+  'lang.autoDetect': 'Detectar automaticamente', 'lang.commonGroup': 'Idiomas frequentes', 'lang.allGroup': 'Todos os idiomas', 'brand.settings': 'Configurações',
   // 通用
   'settings': 'Configurações',
   'save': 'Salvar',
@@ -386,6 +390,7 @@ export const DICT_PT_BR: Record<string, string> = {
 
 // ===== 日本語 =====
 export const DICT_JA: Record<string, string> = {
+  'lang.autoDetect': '自動検出', 'lang.commonGroup': 'よく使う言語', 'lang.allGroup': 'すべての言語', 'brand.settings': '設定',
   // 通用
   'settings': '設定',
   'save': '保存',
@@ -481,6 +486,7 @@ export const DICT_JA: Record<string, string> = {
 
 // ===== 繁體中文（台灣用語） =====
 export const DICT_ZH_TW: Record<string, string> = {
+  'lang.autoDetect': '自動偵測', 'lang.commonGroup': '常用語言', 'lang.allGroup': '所有語言', 'brand.settings': '設定',
   // 通用
   'settings': '設定',
   'save': '儲存',
@@ -576,6 +582,7 @@ export const DICT_ZH_TW: Record<string, string> = {
 
 // ===== 한국어 =====
 export const DICT_KO: Record<string, string> = {
+  'lang.autoDetect': '자동 감지', 'lang.commonGroup': '자주 쓰는 언어', 'lang.allGroup': '모든 언어', 'brand.settings': '설정',
   // 通用
   'settings': '설정',
   'save': '저장',

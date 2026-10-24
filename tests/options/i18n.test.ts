@@ -34,6 +34,10 @@ import type { Config } from "../../src/shared/config";
 const EXPECTED_KEYS = [
   // 通用
   "settings",
+  "brand.settings",
+  "lang.autoDetect",
+  "lang.commonGroup",
+  "lang.allGroup",
   "save",
   "saved",
   "cancel",

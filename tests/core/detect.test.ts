@@ -74,6 +74,34 @@ describe("looksLikeLang", () => {
   it("空串 → false", () => {
     expect(looksLikeLang("", "en")).toBe(false);
   });
+  it("拉丁语系互译不得误判为已是目标语言（回归：英→德/法/西/葡曾全被跳过）", () => {
+    const en =
+      "In an industry obsessed with speed, a small movement of developers is rediscovering the value of doing less.";
+    expect(looksLikeLang(en, "de")).toBe(false);
+    expect(looksLikeLang(en, "fr")).toBe(false);
+    expect(looksLikeLang(en, "es")).toBe(false);
+    expect(looksLikeLang(en, "pt")).toBe(false);
+    expect(looksLikeLang(en, "it")).toBe(false);
+    expect(looksLikeLang(en, "nl")).toBe(false);
+  });
+  it("英文 → en 仍判 true", () => {
+    expect(looksLikeLang("The principles are simple and clear for it", "en")).toBe(true);
+  });
+  it("德文 → de 判 true（已是目标语言跳过）", () => {
+    expect(looksLikeLang("In einer Branche, die von Geschwindigkeit besessen ist, ist weniger mehr", "de")).toBe(true);
+  });
+  it("法文 → fr 判 true", () => {
+    expect(looksLikeLang("Dans une industrie obsédée par la vitesse, il est des leçons", "fr")).toBe(true);
+  });
+  it("西文 → es 判 true", () => {
+    expect(looksLikeLang("En una industria obsesionada con la velocidad, el movimiento es pequeño", "es")).toBe(true);
+  });
+  it("葡文 → pt 判 true", () => {
+    expect(looksLikeLang("Em uma indústria obcecada por velocidade, não é sobre minutos", "pt")).toBe(true);
+  });
+  it("无功能词的短拉丁文本 → false（保守翻译）", () => {
+    expect(looksLikeLang("Practical guidelines", "de")).toBe(false);
+  });
 });
 
 describe("detectPageLang", () => {

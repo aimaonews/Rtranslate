@@ -66,6 +66,7 @@ export function fmt(template: string, vars: Record<string, string | number>): st
 const EN: Record<string, string> = {
   // 通用
   'settings': 'Settings',
+  'lang.autoDetect': 'Auto-detect', 'lang.commonGroup': 'Common languages', 'lang.allGroup': 'All languages', 'brand.settings': 'Settings',
   'save': 'Save',
   'saved': 'Saved',
   'cancel': 'Cancel',

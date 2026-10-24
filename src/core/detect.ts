@@ -58,6 +58,45 @@ export function scriptStats(text: string): ScriptStats {
 }
 
 /**
+ * 拉丁字母语言的高频功能词（整词、小写、去重计数）。
+ * 拉丁语系共用一套字母，文字占比无法区分语种——用功能词投票：
+ * 目标语言需命中 ≥2 个不同功能词，且是所有语言中的唯一最高分，才判"已是目标语言"。
+ * 判不出一律返回 false（宁可多翻浪费额度，不可漏翻导致功能缺失）。
+ */
+const LATIN_STOPWORDS: Record<string, readonly string[]> = {
+  en: ["the", "and", "of", "to", "in", "is", "that", "for", "it", "with", "this", "an", "was", "on", "are", "as"],
+  de: ["der", "die", "das", "und", "ist", "nicht", "ein", "eine", "mit", "für", "auf", "den", "von", "zu"],
+  es: ["que", "el", "los", "las", "una", "con", "por", "del", "se", "en", "un", "es", "la"],
+  fr: ["le", "les", "est", "et", "des", "une", "dans", "pour", "pas", "sur", "au", "que", "la"],
+  pt: ["que", "em", "para", "com", "não", "uma", "dos", "ao", "seu", "de", "por", "é"],
+  it: ["il", "che", "di", "un", "non", "per", "del", "sono", "gli", "con", "la"],
+  nl: ["het", "een", "van", "dat", "niet", "met", "voor", "op", "aan", "de"],
+  pl: ["nie", "jest", "się", "przez", "oraz", "jak", "ale", "tego"],
+  sv: ["och", "att", "det", "som", "på", "är", "för", "med", "inte"],
+  da: ["og", "det", "som", "er", "til", "med", "ikke", "for"],
+  no: ["og", "det", "som", "er", "til", "ikke", "for", "med"],
+  fi: ["on", "ja", "ei", "se", "että", "sekä", "kun", "niin"],
+  tr: ["bir", "ve", "bu", "için", "ile", "olarak", "daha", "değil"],
+  cs: ["je", "se", "na", "že", "ale", "tak", "jako", "ne"],
+  hu: ["az", "egy", "hogy", "nem", "volt", "van", "még"],
+  ro: ["și", "este", "în", "care", "nu", "un", "la"],
+  id: ["yang", "dan", "itu", "dengan", "untuk", "tidak", "ini"],
+  ms: ["yang", "dan", "itu", "dengan", "untuk", "tidak", "ini"],
+  vi: ["của", "và", "là", "có", "được", "trong", "không"],
+  ca: ["les", "és", "amb", "per", "que", "una"],
+  eu: ["eta", "bat", "ez", "da", "baina"],
+  sw: ["na", "ya", "wa", "kwa", "ni", "za"],
+};
+
+function latinStopwordHits(words: ReadonlySet<string>, lang: string): number {
+  const list = LATIN_STOPWORDS[lang];
+  if (!list) return 0;
+  let n = 0;
+  for (const w of list) if (words.has(w)) n++;
+  return n;
+}
+
+/**
  * 启发式判断 text 是否"看起来是 lang 语言"。
  * total < 4 时文本太短，一律返回 false（不够统计意义）。
  * lang 传 ISO 码（'zh-CN' / 'zh-TW' / 'ja' / 'ko' / 'en' …）。
@@ -86,9 +125,21 @@ export function looksLikeLang(text: string, lang: string): boolean {
     case "fa":
     case "ur":
       return ratio(s.arabic) > 0.5;
-    default:
-      // 拉丁语系（en/fr/de/es/…）：拉丁字母过半且基本无 CJK/假名/谚文
-      return ratio(s.latin) > 0.5 && s.cjk === 0 && s.kana === 0 && s.hangul === 0;
+    default: {
+      // 拉丁语系：字母占比只是入场券，语种靠功能词投票区分。
+      if (ratio(s.latin) <= 0.5 || s.cjk > 0 || s.kana > 0 || s.hangul > 0) return false;
+      const words = new Set(text.toLowerCase().match(/[\p{L}\p{M}']+/gu) ?? []);
+      const target = latinStopwordHits(words, code);
+      if (target < 2) return false;
+      let best = 0;
+      let ties = 0;
+      for (const other of Object.keys(LATIN_STOPWORDS)) {
+        const hits = latinStopwordHits(words, other);
+        if (hits > best) { best = hits; ties = 1; }
+        else if (hits === best && hits > 0) ties++;
+      }
+      return target === best && ties === 1;
+    }
   }
 }
 

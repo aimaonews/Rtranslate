@@ -7,7 +7,7 @@
  * - 生词本 {kind:'getWords'} 拉取、{kind:'deleteWord',id} 删除、{kind:'saveWord'} 逐条导入；
  * - 每次保存成功后顶部显示轻提示「已保存」。
  */
-import { LANGS, COMMON_LANG_CODES, langName } from '../core/langs'
+import { LANGS, COMMON_LANG_CODES, langNative } from '../core/langs'
 import { TRANSLATION_STYLES } from '../core/styles'
 import type { Config, CustomEngine, GlossaryTerm } from '../shared/config'
 import { t, resolveUiLang, UI_LANGS, type UiLangCode } from '../shared/i18n'
@@ -148,16 +148,17 @@ function buildLangSelect(
   opts: { excludeAuto?: boolean; onChange: (code: string) => void },
 ): HTMLSelectElement {
   const sel = el('select', 'control')
+  const ui = resolveUiLang(config.uiLang)
   const commonGroup = el('optgroup')
-  commonGroup.label = '常用语言'
+  commonGroup.label = t('lang.commonGroup', ui, '常用语言')
   const allGroup = el('optgroup')
-  allGroup.label = '全部语言'
+  allGroup.label = t('lang.allGroup', ui, '全部语言')
   const commonSet = new Set<string>(COMMON_LANG_CODES)
   for (const l of LANGS) {
     if (opts.excludeAuto && l.code === 'auto') continue
     const opt = el('option')
     opt.value = l.code
-    opt.textContent = langName(l.code, 'zh')
+    opt.textContent = l.code === 'auto' ? t('lang.autoDetect', ui, '自动检测') : langNative(l.code)
     if (commonSet.has(l.code)) commonGroup.append(opt)
     else allGroup.append(opt)
   }
@@ -167,7 +168,7 @@ function buildLangSelect(
     // 未知语言码：兜底展示原码
     const opt = el('option')
     opt.value = current
-    opt.textContent = current
+    opt.textContent = langNative(current)
     commonGroup.append(opt)
     sel.value = current
   }
@@ -395,7 +396,7 @@ function buildShell(root: HTMLElement): void {
   logo.src = chrome.runtime.getURL('icons/icon48.png')
   logo.alt = ''
   const brandText = el('div', 'brand-text')
-  brandText.append(el('span', 'brand-name', 'Rtranslate'), el('span', 'brand-sub', '设置'))
+  brandText.append(el('span', 'brand-name', 'Rtranslate'), el('span', 'brand-sub', t('brand.settings', resolveUiLang(config.uiLang), '设置')))
   brand.append(logo, brandText)
 
   const nav = el('nav', 'nav')
@@ -598,7 +599,7 @@ function renderGeneral(root: HTMLElement): void {
   for (const l of LANGS) {
     if (l.code === 'auto') continue
     const on = config.general.autoTranslateLangs.includes(l.code)
-    const chip = el('button', 'chip' + (on ? ' on' : ''), langName(l.code, 'zh'))
+    const chip = el('button', 'chip' + (on ? ' on' : ''), langNative(l.code))
     chip.type = 'button'
     chip.addEventListener('click', () => {
       const cur = config.general.autoTranslateLangs
@@ -1709,8 +1710,11 @@ function renderInteraction(root: HTMLElement): void {
 async function init(): Promise<void> {
   const app = document.getElementById('app')
   if (!app) return
+  // 支持 URL 参数 ?uiLang=xx 覆盖界面语言（商店截图 / 测试用）
+  const urlLang = new URLSearchParams(location.search).get('uiLang')
   try {
     config = await sendBg<Config>({ kind: 'getConfig' })
+    if (urlLang && UI_LANGS.some((l) => l.code === urlLang)) config.uiLang = urlLang as Config['uiLang']
   } catch (e) {
     app.textContent = `加载配置失败：${errMsg(e)}`
     return
