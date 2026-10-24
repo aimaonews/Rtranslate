@@ -64,13 +64,20 @@ Rtranslate is a fully open-source (GPL-3.0) bilingual webpage translation extens
 
 Privacy policy: https://YOUR-DOMAIN/transverse/privacy
 
-## 截图清单（建议 3-5 张，1280x800 或 1920x1080）
+## 截图清单（9 语言 × 3 张，1280×800，真实渲染）
 
-1. 整页双语对照效果（已有 `scripts/e2e/screenshot-translated.png`，建议重截高清版）
-2. 划词翻译气泡 + AI 解析
-3. 设置页-翻译引擎配置（含 BYOK 与自托管说明）
-4. 闪卡复习页
-5. 12 种译文样式预览
+截图位于 `store-assets/screenshots/<locale>/`，每语言 3 张：
+
+1. `screenshot-1-bilingual.png` — 整页双语对照（英文原文 + 目标语言译文；en 语言为中文原文 + 英文译文）
+2. `screenshot-2-selection.png` — 划词翻译气泡（目标语言译文）
+3. `screenshot-3-options.png` — 设置页（目标界面语言）
+
+| locale 目录 | 界面语言 | 译文语言 | 原文语言 |
+|---|---|---|---|
+| en | English | English | 中文 |
+| de / es / fr / pt_BR / ja / zh_CN / zh_TW / ko | 各自语言 | 各自语言 | English |
+
+生成方式：`node scripts/e2e/shot-all-langs.mjs`（AI猫引擎真实翻译后 CDP 截图，非合成图）。
 
 ## 审核测试说明（Notes for certification，Edge Partner Center 用）
 
