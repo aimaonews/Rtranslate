@@ -2,7 +2,10 @@
 // userPrompt 支持占位符：{{text}} {{to}} {{from}} {{glossary}} {{tone}}
 export interface ExpertPreset {
   id: string
+  /** 中文名（UI 回退原文用；预设会复制进用户配置，显示时按 nameKey 本地化） */
   name: string
+  /** i18n 键（仅内置预设有；自定义专家省略则始终显示 name） */
+  nameKey?: string
   builtin: boolean
   systemPrompt: string
   userPrompt: string
@@ -13,6 +16,7 @@ const BASE_USER = 'Translate the following text into {{to}}. Output only the tra
 export const BUILTIN_EXPERTS: ExpertPreset[] = [
   {
     id: 'general',
+    nameKey: 'expert.general',
     name: '通用',
     builtin: true,
     systemPrompt: 'You are a professional, authentic translation engine.',
@@ -20,6 +24,7 @@ export const BUILTIN_EXPERTS: ExpertPreset[] = [
   },
   {
     id: 'tech',
+    nameKey: 'expert.tech',
     name: '技术文档',
     builtin: true,
     systemPrompt:
@@ -28,6 +33,7 @@ export const BUILTIN_EXPERTS: ExpertPreset[] = [
   },
   {
     id: 'literary',
+    nameKey: 'expert.literary',
     name: '文学',
     builtin: true,
     systemPrompt:
@@ -36,6 +42,7 @@ export const BUILTIN_EXPERTS: ExpertPreset[] = [
   },
   {
     id: 'academic',
+    nameKey: 'expert.academic',
     name: '学术',
     builtin: true,
     systemPrompt:
@@ -44,6 +51,7 @@ export const BUILTIN_EXPERTS: ExpertPreset[] = [
   },
   {
     id: 'social',
+    nameKey: 'expert.social',
     name: '社交媒体',
     builtin: true,
     systemPrompt:

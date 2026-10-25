@@ -19,6 +19,8 @@ import { renderGlossaryLibsTab } from './tabGlossaryLibs'
 import { renderWritingTab } from './tabWriting'
 import { renderTtsTab } from './tabTts'
 import { renderHotkeysTab } from './tabHotkeys'
+import { BUILTIN_ENGINES, engineName, engineDesc } from '../shared/engines'
+import { styleName, previewGlyph } from '../shared/uiLabels'
 
 // ===== 消息封装 =====
 
@@ -26,7 +28,7 @@ import { renderHotkeysTab } from './tabHotkeys'
 async function sendBg<T>(msg: BgRequest): Promise<T> {
   const resp = (await chrome.runtime.sendMessage(msg)) as BgResponse<T> | undefined
   if (!resp || typeof resp !== 'object' || !('ok' in resp)) {
-    throw new Error('background 未响应')
+    throw new Error(ot('opt.s1', 'background 未响应'))
   }
   if (!resp.ok) throw new Error(resp.error)
   return resp.data
@@ -39,6 +41,8 @@ function errMsg(e: unknown): string {
 // ===== 状态 =====
 
 let config: Config
+/** 当前界面语言文案（zh-CN 回退原文；auto 先解析为浏览器语言） */
+const ot = (key: string, zh: string): string => t(key, resolveUiLang(config.uiLang), zh)
 let words: WordItem[] = []
 let wordsLoaded = false
 let activeTab: TabId = 'general'
@@ -223,12 +227,12 @@ function buildSecretInput(value: string, placeholder: string, onCommit: (v: stri
   input.placeholder = placeholder
   input.autocomplete = 'off'
   input.spellcheck = false
-  const btn = el('button', 'btn btn-ghost', '显示')
+  const btn = el('button', 'btn btn-ghost', ot('opt.s2', '显示'))
   btn.type = 'button'
   btn.addEventListener('click', () => {
     const show = input.type === 'password'
     input.type = show ? 'text' : 'password'
-    btn.textContent = show ? '隐藏' : '显示'
+    btn.textContent = show ? ot('opt.s3', '隐藏') : ot('opt.s2', '显示')
   })
   input.addEventListener('change', () => onCommit(input.value.trim()))
   wrap.append(input, btn)
@@ -262,7 +266,7 @@ function buildNumberInput(value: number, min: number, onCommit: (v: number) => v
 function buildTagList(items: readonly string[], onRemove: (item: string) => void): HTMLElement {
   const wrap = el('div', 'tags')
   if (items.length === 0) {
-    wrap.append(el('span', 'empty-inline', '暂无'))
+    wrap.append(el('span', 'empty-inline', ot('opt.s4', '暂无')))
     return wrap
   }
   for (const item of items) {
@@ -270,8 +274,8 @@ function buildTagList(items: readonly string[], onRemove: (item: string) => void
     tag.append(el('span', undefined, item))
     const btn = el('button', 'tag-x', '×')
     btn.type = 'button'
-    btn.title = '移除'
-    btn.setAttribute('aria-label', `移除 ${item}`)
+    btn.title = ot('opt.s5', '移除')
+    btn.setAttribute('aria-label', ot('opt.s6', `移除 ${item}`))
     btn.addEventListener('click', () => onRemove(item))
     tag.append(btn)
     wrap.append(tag)
@@ -285,7 +289,7 @@ function buildDomainAdder(placeholder: string, onAdd: (domain: string) => void):
   const input = el('input', 'control')
   input.type = 'text'
   input.placeholder = placeholder
-  const btn = el('button', 'btn', '添加')
+  const btn = el('button', 'btn', ot('opt.s7', '添加'))
   btn.type = 'button'
   const submit = (): void => {
     const d = normalizeDomain(input.value)
@@ -330,7 +334,7 @@ async function ensureEndpointPermissions(patch: Partial<Config>): Promise<boolea
     if (await chrome.permissions.contains({ origins: [origin] })) continue
     const granted = await chrome.permissions.request({ origins: [origin] })
     if (!granted) {
-      showToast(`未授予 ${origin} 访问权限，该接口将无法连通`)
+      showToast(ot('opt.s8', `未授予 ${origin} 访问权限，该接口将无法连通`))
       return false
     }
   }
@@ -341,9 +345,9 @@ async function patchConfig(patch: Partial<Config>): Promise<void> {
   try {
     if (!(await ensureEndpointPermissions(patch))) return
     config = await sendBg<Config>({ kind: 'setConfig', patch })
-    showToast('已保存')
+    showToast(ot('opt.s9', '已保存'))
   } catch (e) {
-    showToast(`保存失败：${errMsg(e)}`)
+    showToast(ot('opt.s10', `保存失败：${errMsg(e)}`))
   }
   renderContent()
 }
@@ -410,7 +414,7 @@ function buildShell(root: HTMLElement): void {
   sidebar.append(brand, nav)
 
   const sideFooter = el('div', 'side-footer')
-  const siteLink = el('a', 'side-footer-link', 'AI猫 aimao.today')
+  const siteLink = el('a', 'side-footer-link', 'aimao.today')
   siteLink.href = 'https://www.aimao.today'
   siteLink.target = '_blank'
   siteLink.rel = 'noopener noreferrer'
@@ -645,20 +649,6 @@ export interface EngineOption {
   icon: string
 }
 
-/** 内置引擎（AI猫置顶）；旧单 custom 引擎保留配置兼容，但不再出现在下拉中 */
-const BUILTIN_ENGINES: ReadonlyArray<{ id: string; name: string; desc: string }> = [
-  { id: 'aimao', name: 'AI猫', desc: 'AI猫是本站提供的 OpenAI 兼容翻译服务，开箱即用。' },
-  { id: 'google', name: '谷歌免费', desc: '谷歌 gtx 免费端点，开箱即用，无需密钥。' },
-  { id: 'bing', name: '微软免费', desc: '微软 Edge 翻译端点，免费引擎链备选。' },
-  { id: 'mymemory', name: 'MyMemory 免费', desc: 'MyMemory 免费接口，免费引擎链兜底。' },
-  { id: 'deepl', name: 'DeepL', desc: 'DeepL 官方 API，需自备 API Key，翻译质量高。' },
-  { id: 'openai', name: 'OpenAI 兼容', desc: 'OpenAI / 硅基流动 / Ollama 等一切 OpenAI 兼容端点，需 API Key。' },
-  { id: 'deepseek', name: 'DeepSeek', desc: 'DeepSeek 官方 API（OpenAI 兼容协议），需 API Key。' },
-  { id: 'claude', name: 'Claude (Anthropic)', desc: 'Anthropic Claude 官方 API，需自备 API Key，翻译质量高。' },
-  { id: 'gemini', name: 'Gemini (Google)', desc: 'Google Gemini 官方 API，需自备 API Key，速度快、免费额度慷慨。' },
-  { id: 'libretranslate', name: 'LibreTranslate', desc: '开源可自托管的翻译服务，填写实例地址即可。' },
-]
-
 /** 引擎图标（构建后位于 dist/engine-icons/，引用走 chrome.runtime.getURL） */
 const ENGINE_ICON_FILES: Record<string, string> = {
   aimao: 'engine-icons/aimao.png',
@@ -676,8 +666,11 @@ const ENGINE_ICON_FILES: Record<string, string> = {
 
 /** 引擎下拉选项：AI猫第一 + 内置引擎 + config.engine.customEngines（id 为 custom:<entryId>） */
 export function getEngineOptions(cfg: Config): EngineOption[] {
+  const ui = resolveUiLang(cfg.uiLang)
   const options: EngineOption[] = BUILTIN_ENGINES.map((e) => ({
-    ...e,
+    id: e.id,
+    name: engineName(e, ui),
+    desc: engineDesc(e, ui),
     icon: ENGINE_ICON_FILES[e.id] ?? '',
   }))
   for (const entry of cfg.engine.customEngines) {
@@ -785,10 +778,10 @@ function renderEngine(root: HTMLElement): void {
   const p = config.engine.provider
   const adding = customEngineAdding
 
-  const c = card('引擎选择', '选择默认翻译引擎并完成其配置；免费引擎失败时自动降级到下一个免费引擎。')
+  const c = card(ot('opt.s11', '引擎选择'), ot('opt.s12', '选择默认翻译引擎并完成其配置；免费引擎失败时自动降级到下一个免费引擎。'))
   c.append(
     fieldRow(
-      '引擎',
+      ot('opt.s13', '引擎'),
       buildEngineSelect(
         options,
         adding ? ADD_CUSTOM_ENGINE_ID : p,
@@ -802,13 +795,13 @@ function renderEngine(root: HTMLElement): void {
           customEngineAdding = false
           void patchConfig({ engine: { ...config.engine, provider: id } })
         },
-        { id: ADD_CUSTOM_ENGINE_ID, label: '＋ 添加自定义引擎' },
+        { id: ADD_CUSTOM_ENGINE_ID, label: ot('opt.s14', '＋ 添加自定义引擎') },
       ),
     ),
     el(
       'p',
       'engine-desc',
-      adding ? '填写新引擎信息，保存后自动设为当前翻译引擎。' : options.find((o) => o.id === p)?.desc ?? '',
+      adding ? ot('opt.s15', '填写新引擎信息，保存后自动设为当前翻译引擎。') : options.find((o) => o.id === p)?.desc ?? '',
     ),
   )
 
@@ -822,56 +815,56 @@ function renderEngine(root: HTMLElement): void {
   c.append(configArea)
 
   // 引擎连通性测试：用当前已保存配置翻译 "Hello"（background 复用 translate() 管线）
-  const testBtn = el('button', 'btn btn-secondary', '测试连接')
+  const testBtn = el('button', 'btn btn-secondary', ot('opt.s16', '测试连接'))
   testBtn.type = 'button'
   const testResult = el('p', 'hint')
   testBtn.addEventListener('click', () => {
     if (testBtn.disabled) return // loading 态防重复点击
     testBtn.disabled = true
-    testBtn.textContent = '测试中…'
+    testBtn.textContent = ot('opt.s17', '测试中…')
     testResult.textContent = ''
     void (async () => {
       try {
         const r = await sendBg<TestEngineResult>({ kind: 'testEngine' })
         if (r.ok) {
           testResult.style.color = 'var(--tv-success)'
-          testResult.textContent = `连接成功：Hello → ${r.text ?? ''}（${r.engine}，${r.elapsedMs}ms）`
+          testResult.textContent = ot('opt.s18', `连接成功：Hello → ${r.text ?? ''}（${r.engine}，${r.elapsedMs}ms）`)
         } else {
           testResult.style.color = 'var(--tv-danger-text)'
-          testResult.textContent = `连接失败：${r.error ?? '未知错误'}（${r.elapsedMs}ms）`
+          testResult.textContent = ot('opt.s19', `连接失败：${r.error ?? '未知错误'}（${r.elapsedMs}ms）`)
         }
       } catch (e) {
         testResult.style.color = 'var(--tv-danger-text)'
-        testResult.textContent = `连接失败：${errMsg(e)}`
+        testResult.textContent = ot('opt.s20', `连接失败：${errMsg(e)}`)
       } finally {
         testBtn.disabled = false
-        testBtn.textContent = '测试连接'
+        testBtn.textContent = ot('opt.s16', '测试连接')
       }
     })()
   })
   // 请求超时并入引擎大卡片：分隔线之上为引擎配置，之下为超时与连通性测试
   c.append(
     el('hr', 'engine-divider'),
-    fieldRow('超时（毫秒）', buildNumberInput(config.engine.timeoutMs, 1000, (v) => {
+    fieldRow(ot('opt.s21', '超时（毫秒）'), buildNumberInput(config.engine.timeoutMs, 1000, (v) => {
       void patchConfig({ engine: { ...config.engine, timeoutMs: v } })
     })),
-    fieldRow('连通性', testBtn),
+    fieldRow(ot('opt.s22', '连通性'), testBtn),
     testResult,
   )
 
   // 批量翻译
-  const batchCard = card('批量翻译', 'LLM 类引擎将多个短句聚合为一次请求，显著降低请求数、提升速度。')
+  const batchCard = card(ot('opt.s23', '批量翻译'), ot('opt.s24', 'LLM 类引擎将多个短句聚合为一次请求，显著降低请求数、提升速度。'))
   batchCard.append(
-    fieldRow('启用批量翻译', buildSwitch(config.batch.enabled, '批量翻译', (v) => {
+    fieldRow(ot('opt.s25', '启用批量翻译'), buildSwitch(config.batch.enabled, ot('opt.s23', '批量翻译'), (v) => {
       void patchConfig({ batch: { ...config.batch, enabled: v } })
     })),
-    fieldRow('每批最大条数', buildNumberInput(config.batch.maxTexts, 1, (v) => {
+    fieldRow(ot('opt.s26', '每批最大条数'), buildNumberInput(config.batch.maxTexts, 1, (v) => {
       void patchConfig({ batch: { ...config.batch, maxTexts: v } })
     })),
-    fieldRow('每批最大字符数', buildNumberInput(config.batch.maxChars, 100, (v) => {
+    fieldRow(ot('opt.s27', '每批最大字符数'), buildNumberInput(config.batch.maxChars, 100, (v) => {
       void patchConfig({ batch: { ...config.batch, maxChars: v } })
     })),
-    fieldRow('聚合间隔（毫秒）', buildNumberInput(config.batch.intervalMs, 10, (v) => {
+    fieldRow(ot('opt.s28', '聚合间隔（毫秒）'), buildNumberInput(config.batch.intervalMs, 10, (v) => {
       void patchConfig({ batch: { ...config.batch, intervalMs: v } })
     })),
   )
@@ -885,17 +878,17 @@ function buildProviderConfig(area: HTMLElement, p: string): void {
     area.append(
       fieldRow('Endpoint', el('span', 'field-static', 'https://api.aimao.today/v1')),
       fieldRow(
-        '模型',
-        buildTextInput(config.engine.aimao.model, '留空使用默认模型', (v) => {
+        ot('opt.s29', '模型'),
+        buildTextInput(config.engine.aimao.model, ot('opt.s30', '留空使用默认模型'), (v) => {
           void patchConfig({ engine: { ...config.engine, aimao: { ...config.engine.aimao, model: v } } })
         }),
       ),
     )
     // API Key + 右侧「获取API秘钥」外链
-    const secret = buildSecretInput(config.engine.keys.aimao, '粘贴 AI猫 API Key', (v) => {
+    const secret = buildSecretInput(config.engine.keys.aimao, t('engine.aimaoKeyPh', resolveUiLang(config.uiLang), '粘贴 aimao API Key'), (v) => {
       void patchConfig({ engine: { ...config.engine, keys: { ...config.engine.keys, aimao: v } } })
     })
-    const keyLink = el('a', 'apikey-link', '获取API秘钥')
+    const keyLink = el('a', 'apikey-link', t('engine.getApiKey', resolveUiLang(config.uiLang), '获取 API 密钥'))
     keyLink.href = 'https://api.aimao.today/docs/'
     keyLink.target = '_blank'
     keyLink.rel = 'noopener noreferrer'
@@ -903,10 +896,10 @@ function buildProviderConfig(area: HTMLElement, p: string): void {
     area.append(fieldRow('API Key', secret))
   } else if (p === 'deepl') {
     area.append(
-      el('p', 'hint', '密钥仅保存在本机浏览器中。'),
+      el('p', 'hint', ot('opt.s31', '密钥仅保存在本机浏览器中。')),
       fieldRow(
         'API Key',
-        buildSecretInput(config.engine.keys.deepl, '粘贴 DeepL API Key', (v) => {
+        buildSecretInput(config.engine.keys.deepl, ot('opt.s32', '粘贴 DeepL API Key'), (v) => {
           void patchConfig({ engine: { ...config.engine, keys: { ...config.engine.keys, deepl: v } } })
         }),
       ),
@@ -920,7 +913,7 @@ function buildProviderConfig(area: HTMLElement, p: string): void {
         }),
       ),
       fieldRow(
-        '模型',
+        ot('opt.s29', '模型'),
         buildTextInput(config.engine.openai.model, 'gpt-4o-mini', (v) => {
           void patchConfig({ engine: { ...config.engine, openai: { ...config.engine.openai, model: v } } })
         }),
@@ -941,14 +934,14 @@ function buildProviderConfig(area: HTMLElement, p: string): void {
         }),
       ),
       fieldRow(
-        '模型',
+        ot('opt.s29', '模型'),
         buildTextInput(config.engine.deepseek.model, 'deepseek-chat', (v) => {
           void patchConfig({ engine: { ...config.engine, deepseek: { ...config.engine.deepseek, model: v } } })
         }),
       ),
       fieldRow(
         'API Key',
-        buildSecretInput(config.engine.keys.openai, 'sk-...（与 OpenAI 兼容引擎共用此密钥框）', (v) => {
+        buildSecretInput(config.engine.keys.openai, ot('opt.s33', 'sk-...（与 OpenAI 兼容引擎共用此密钥框）'), (v) => {
           void patchConfig({ engine: { ...config.engine, keys: { ...config.engine.keys, openai: v } } })
         }),
       ),
@@ -956,7 +949,7 @@ function buildProviderConfig(area: HTMLElement, p: string): void {
   } else if (p === 'claude') {
     area.append(
       fieldRow(
-        '模型',
+        ot('opt.s29', '模型'),
         buildTextInput(config.engine.claude.model, 'claude-haiku-4-5-20251001', (v) => {
           void patchConfig({ engine: { ...config.engine, claude: { ...config.engine.claude, model: v } } })
         }),
@@ -971,7 +964,7 @@ function buildProviderConfig(area: HTMLElement, p: string): void {
   } else if (p === 'gemini') {
     area.append(
       fieldRow(
-        '模型',
+        ot('opt.s29', '模型'),
         buildTextInput(config.engine.gemini.model, 'gemini-2.5-flash', (v) => {
           void patchConfig({ engine: { ...config.engine, gemini: { ...config.engine.gemini, model: v } } })
         }),
@@ -986,7 +979,7 @@ function buildProviderConfig(area: HTMLElement, p: string): void {
   } else if (p === 'libretranslate') {
     area.append(
       fieldRow(
-        '实例 URL',
+        ot('opt.s34', '实例 URL'),
         buildTextInput(config.engine.keys.libreUrl, 'https://libretranslate.com', (v) => {
           void patchConfig({ engine: { ...config.engine, keys: { ...config.engine.keys, libreUrl: v } } })
         }),
@@ -998,35 +991,35 @@ function buildProviderConfig(area: HTMLElement, p: string): void {
       // 选中自定义引擎：配置区直接显示该引擎的编辑表单（含删除入口）
       area.append(buildCustomEngineForm(id))
     } else {
-      area.append(el('p', 'empty', '该自定义引擎已被删除，请重新选择引擎。'))
+      area.append(el('p', 'empty', ot('opt.s35', '该自定义引擎已被删除，请重新选择引擎。')))
     }
   } else if (p === 'custom') {
     // 旧单自定义引擎（兼容保留，不再出现在下拉中）
     area.append(
       fieldRow(
-        '接口 URL',
+        ot('opt.s36', '接口 URL'),
         buildTextInput(config.engine.custom.url, 'https://example.com/translate', (v) => {
           void patchConfig({ engine: { ...config.engine, custom: { ...config.engine.custom, url: v } } })
         }),
       ),
-      el('p', 'hint', '请求体占位符：{{text}} 原文、{{from}} 源语言、{{to}} 目标语言，发送时按实际值替换。'),
+      el('p', 'hint', ot('opt.s37', '请求体占位符：{{text}} 原文、{{from}} 源语言、{{to}} 目标语言，发送时按实际值替换。')),
       fieldTop(
-        '自定义请求体 JSON',
+        ot('opt.s38', '自定义请求体 JSON'),
         buildTextarea(config.engine.custom.bodyJson, 5, (v) => {
           void patchConfig({ engine: { ...config.engine, custom: { ...config.engine.custom, bodyJson: v } } })
         }),
       ),
       fieldTop(
-        '自定义请求头 JSON',
+        ot('opt.s39', '自定义请求头 JSON'),
         buildTextarea(config.engine.keys.customHeadersJson, 3, (v) => {
           void patchConfig({ engine: { ...config.engine, keys: { ...config.engine.keys, customHeadersJson: v } } })
         }),
       ),
-      el('p', 'hint', '请求头为 JSON 对象，如 {"Authorization":"Bearer xxx"}；留空则不附加。'),
+      el('p', 'hint', ot('opt.s40', '请求头为 JSON 对象，如 {"Authorization":"Bearer xxx"}；留空则不附加。')),
     )
   } else {
     // google / bing / mymemory：免费引擎开箱即用
-    area.append(el('p', 'empty', '该引擎开箱即用，无需配置。'))
+    area.append(el('p', 'empty', ot('opt.s41', '该引擎开箱即用，无需配置。')))
   }
 }
 
@@ -1052,10 +1045,10 @@ function buildCustomEngineForm(editId: string | null): HTMLElement {
     input.autocomplete = 'off'
     return input
   }
-  const nameInput = mkInput(editing?.name ?? '我的引擎', '引擎名称')
+  const nameInput = mkInput(editing?.name ?? ot('opt.s42', '我的引擎'), ot('opt.s43', '引擎名称'))
   const endpointInput = mkInput(editing?.endpoint ?? '', 'https://api.example.com/v1')
   const keyInput = mkInput(editing?.apiKey ?? '', 'sk-...', 'password')
-  const modelInput = mkInput(editing?.model ?? '', '模型名，如 gpt-4o-mini')
+  const modelInput = mkInput(editing?.model ?? '', ot('opt.s44', '模型名，如 gpt-4o-mini'))
   const headersInput = el('textarea', 'control')
   headersInput.rows = 2
   headersInput.value = editing?.headersJson ?? '{}'
@@ -1065,13 +1058,13 @@ function buildCustomEngineForm(editId: string | null): HTMLElement {
   const advanced = el('details', 'engine-advanced')
   const advancedBody = el('div', 'engine-advanced-body')
   advancedBody.append(
-    fieldTop('请求头 JSON', headersInput),
-    el('p', 'hint', '一般无需填写，仅当接口需要额外请求头时使用；JSON 对象，如 {"Authorization":"Bearer xxx"}。'),
+    fieldTop(ot('opt.s45', '请求头 JSON'), headersInput),
+    el('p', 'hint', ot('opt.s46', '一般无需填写，仅当接口需要额外请求头时使用；JSON 对象，如 {"Authorization":"Bearer xxx"}。')),
   )
-  advanced.append(el('summary', 'engine-advanced-summary', '高级设置（可选）'), advancedBody)
+  advanced.append(el('summary', 'engine-advanced-summary', ot('opt.s47', '高级设置（可选）')), advancedBody)
 
   // 获取模型列表：GET {endpoint 去尾斜杠}/models，Authorization: Bearer，解析 data[].id
-  const fetchBtn = el('button', 'btn btn-ghost', '获取模型列表')
+  const fetchBtn = el('button', 'btn btn-ghost', ot('opt.s48', '获取模型列表'))
   fetchBtn.type = 'button'
   const fetchHint = el('span', 'hint-inline')
   const modelRow = el('div', 'adder')
@@ -1081,11 +1074,11 @@ function buildCustomEngineForm(editId: string | null): HTMLElement {
     if (fetchBtn.disabled) return
     const endpoint = endpointInput.value.trim().replace(/\/+$/, '')
     if (!endpoint) {
-      fetchHint.textContent = '请先填写 Endpoint'
+      fetchHint.textContent = ot('opt.s49', '请先填写 Endpoint')
       return
     }
     fetchBtn.disabled = true
-    fetchBtn.textContent = '拉取中…'
+    fetchBtn.textContent = ot('opt.s50', '拉取中…')
     fetchHint.textContent = ''
     modelPickWrap.replaceChildren()
     void (async () => {
@@ -1099,11 +1092,11 @@ function buildCustomEngineForm(editId: string | null): HTMLElement {
         const models = (Array.isArray(data.data) ? data.data : [])
           .map((m) => (m && typeof m.id === 'string' ? m.id : ''))
           .filter((s) => s !== '')
-        if (models.length === 0) throw new Error('接口未返回任何模型')
+        if (models.length === 0) throw new Error(ot('opt.s51', '接口未返回任何模型'))
         const sel = el('select', 'control')
         const placeholder = el('option')
         placeholder.value = ''
-        placeholder.textContent = '选择模型…'
+        placeholder.textContent = ot('opt.s52', '选择模型…')
         sel.append(placeholder)
         for (const m of models) {
           const opt = el('option')
@@ -1114,35 +1107,35 @@ function buildCustomEngineForm(editId: string | null): HTMLElement {
         sel.addEventListener('change', () => {
           if (sel.value) {
             modelInput.value = sel.value
-            fetchHint.textContent = `已选择 ${sel.value}`
+            fetchHint.textContent = ot('opt.s53', `已选择 ${sel.value}`)
           }
         })
         modelPickWrap.append(sel)
-        fetchHint.textContent = `拉到 ${models.length} 个模型`
+        fetchHint.textContent = ot('opt.s54', `拉到 ${models.length} 个模型`)
       } catch (e) {
-        fetchHint.textContent = `获取模型列表失败：${errMsg(e)}`
+        fetchHint.textContent = ot('opt.s55', `获取模型列表失败：${errMsg(e)}`)
       } finally {
         fetchBtn.disabled = false
-        fetchBtn.textContent = '获取模型列表'
+        fetchBtn.textContent = ot('opt.s48', '获取模型列表')
       }
     })()
   })
 
   const formHint = el('p', 'hint')
-  const saveBtn = el('button', 'btn', editing ? '保存' : '添加')
+  const saveBtn = el('button', 'btn', editing ? ot('opt.s56', '保存') : ot('opt.s7', '添加'))
   saveBtn.type = 'button'
   saveBtn.addEventListener('click', () => {
     const name = nameInput.value.trim()
     const endpoint = endpointInput.value.trim()
     if (!name || !endpoint) {
-      formHint.textContent = '名称与 Endpoint 必填'
+      formHint.textContent = ot('opt.s57', '名称与 Endpoint 必填')
       return
     }
     const headersJson = headersInput.value.trim() || '{}'
     try {
       JSON.parse(headersJson)
     } catch {
-      formHint.textContent = '请求头 JSON 格式不正确'
+      formHint.textContent = ot('opt.s58', '请求头 JSON 格式不正确')
       return
     }
     const entry: CustomEngine = {
@@ -1173,7 +1166,7 @@ function buildCustomEngineForm(editId: string | null): HTMLElement {
   btnRow.append(saveBtn)
   if (editing) {
     // 删除此引擎；若删的是当前引擎，回退到 AI猫
-    const delBtn = el('button', 'btn-link-danger', '删除此引擎')
+    const delBtn = el('button', 'btn-link-danger', ot('opt.s59', '删除此引擎'))
     delBtn.type = 'button'
     delBtn.addEventListener('click', () => {
       const nextEngine = {
@@ -1185,7 +1178,7 @@ function buildCustomEngineForm(editId: string | null): HTMLElement {
     })
     btnRow.append(delBtn)
   } else {
-    const cancelBtn = el('button', 'btn btn-secondary', '取消')
+    const cancelBtn = el('button', 'btn btn-secondary', ot('opt.s60', '取消'))
     cancelBtn.type = 'button'
     cancelBtn.addEventListener('click', () => {
       customEngineAdding = false
@@ -1195,10 +1188,10 @@ function buildCustomEngineForm(editId: string | null): HTMLElement {
   }
 
   form.append(
-    fieldRow('名称', nameInput),
+    fieldRow(ot('opt.s61', '名称'), nameInput),
     fieldRow('Endpoint', endpointInput),
     fieldRow('API Key', keyInput),
-    fieldRow('模型', modelRow),
+    fieldRow(ot('opt.s29', '模型'), modelRow),
     modelPickWrap,
     advanced,
     btnRow,
@@ -1212,7 +1205,7 @@ function buildCustomEngineForm(editId: string | null): HTMLElement {
 // ===== 标签页 3：译文样式 =====
 
 function renderStyle(root: HTMLElement): void {
-  const c = card('样式选择', '选择译文在页面中的展示样式；大号「译」字为实时预览。')
+  const c = card(ot('opt.s62', '样式选择'), ot('opt.s63', '选择译文在页面中的展示样式；大号「译」字为实时预览。'))
   const grid = el('div', 'style-grid')
   for (const s of TRANSLATION_STYLES) {
     const label = el('label', 'style-card' + (config.style.styleId === s.id ? ' selected' : ''))
@@ -1223,8 +1216,8 @@ function renderStyle(root: HTMLElement): void {
     input.checked = config.style.styleId === s.id
     // 预览：复用 content.css 的 tv-style-* 类名（同名样式在 style.css 中定义）
     const preview = el('div', 'style-preview')
-    preview.append(el('span', s.className, '译'))
-    label.append(input, preview, el('div', 'style-name', s.name), el('div', 'style-name-en', s.nameEn))
+    preview.append(el('span', s.className, previewGlyph(resolveUiLang(config.uiLang))))
+    label.append(input, preview, el('div', 'style-name', styleName(s, resolveUiLang(config.uiLang))), el('div', 'style-name-en', s.nameEn))
     input.addEventListener('change', () => {
       if (input.checked) void patchConfig({ style: { styleId: s.id } })
     })
@@ -1239,19 +1232,19 @@ function renderStyle(root: HTMLElement): void {
 function renderPrivacy(root: HTMLElement): void {
   // 与其他页一致：card(标题+说明) + fieldRow 行式开关（标签左+开关右），仅保留 card-mask 醒目底色
   const maskCard = card(
-    '敏感信息脱敏',
-    '开启后，邮箱、电话、银行卡、身份证、API Key 等敏感信息将在本地打码为占位符后再发送翻译；译文返回后在本地还原，原文与敏感信息永不离开浏览器。全部处理在本机完成，默认关闭。',
+    ot('opt.s64', '敏感信息脱敏'),
+    ot('opt.s65', '开启后，邮箱、电话、银行卡、身份证、API Key 等敏感信息将在本地打码为占位符后再发送翻译；译文返回后在本地还原，原文与敏感信息永不离开浏览器。全部处理在本机完成，默认关闭。'),
   )
   maskCard.classList.add('card-mask')
   maskCard.append(
-    fieldRow('启用敏感信息脱敏', buildSwitch(config.mask.enabled, '敏感信息脱敏', (v) => {
+    fieldRow(ot('opt.s66', '启用敏感信息脱敏'), buildSwitch(config.mask.enabled, ot('opt.s64', '敏感信息脱敏'), (v) => {
       void patchConfig({ mask: { enabled: v } })
     })),
   )
 
-  const statsCard = card('使用统计', '本扩展无账号、无遥测，以下数据仅保存在本机。')
+  const statsCard = card(ot('opt.s67', '使用统计'), ot('opt.s68', '本扩展无账号、无遥测，以下数据仅保存在本机。'))
   const row = el('div', 'field')
-  row.append(el('span', 'field-label', '已翻译字符数'), el('span', 'stat-value', config.stats.translatedChars.toLocaleString()))
+  row.append(el('span', 'field-label', ot('opt.s69', '已翻译字符数')), el('span', 'stat-value', config.stats.translatedChars.toLocaleString()))
   statsCard.append(row)
 
   root.append(maskCard, statsCard)
@@ -1322,27 +1315,27 @@ let glossaryImportMsg = ''
 
 function renderGlossary(root: HTMLElement): void {
   const c = card(
-    '术语表',
-    '共 %d 条术语。命中术语将以占位符保护并保证译法一致：发送翻译前术语被替换为占位符，返回后按本表还原。'.replace(
+    ot('opt.s70', '术语表'),
+    ot('opt.s71', '共 %d 条术语。命中术语将以占位符保护并保证译法一致：发送翻译前术语被替换为占位符，返回后按本表还原。').replace(
       '%d',
       String(config.glossary.length),
     ),
   )
 
   if (config.glossary.length === 0) {
-    c.append(el('p', 'empty', '暂无术语，在下方添加。'))
+    c.append(el('p', 'empty', ot('opt.s72', '暂无术语，在下方添加。')))
   } else {
     const table = el('table', 'data-table')
     const thead = el('thead')
     const htr = el('tr')
-    htr.append(el('th', undefined, '原文'), el('th', undefined, '译文'), el('th', undefined, '操作'))
+    htr.append(el('th', undefined, ot('opt.s73', '原文')), el('th', undefined, ot('opt.s74', '译文')), el('th', undefined, ot('opt.s75', '操作')))
     thead.append(htr)
     const tbody = el('tbody')
     config.glossary.forEach((term, idx) => {
       const tr = el('tr')
       tr.append(el('td', undefined, term.src), el('td', undefined, term.dst))
       const opTd = el('td')
-      const del = el('button', 'btn-link-danger', '删除')
+      const del = el('button', 'btn-link-danger', ot('opt.s76', '删除'))
       del.type = 'button'
       del.addEventListener('click', () => {
         void patchConfig({ glossary: config.glossary.filter((_, i) => i !== idx) })
@@ -1359,11 +1352,11 @@ function renderGlossary(root: HTMLElement): void {
   const addRow = el('div', 'glossary-add')
   const srcInput = el('input', 'control')
   srcInput.type = 'text'
-  srcInput.placeholder = '原文术语'
+  srcInput.placeholder = ot('opt.s77', '原文术语')
   const dstInput = el('input', 'control')
   dstInput.type = 'text'
-  dstInput.placeholder = '译文'
-  const addBtn = el('button', 'btn', '添加')
+  dstInput.placeholder = ot('opt.s74', '译文')
+  const addBtn = el('button', 'btn', ot('opt.s7', '添加'))
   addBtn.type = 'button'
   const submit = (): void => {
     const src = srcInput.value.trim()
@@ -1379,7 +1372,7 @@ function renderGlossary(root: HTMLElement): void {
   c.append(addRow)
 
   // 批量导入：粘贴文本或选择 .csv/.txt 文件，每行 `原文,译文`（支持逗号/制表符/竖线分隔）
-  const importToggle = el('button', 'btn btn-secondary glossary-import-toggle', '批量导入')
+  const importToggle = el('button', 'btn btn-secondary glossary-import-toggle', ot('opt.s78', '批量导入'))
   importToggle.type = 'button'
   importToggle.addEventListener('click', () => {
     glossaryImportOpen = !glossaryImportOpen
@@ -1391,11 +1384,11 @@ function renderGlossary(root: HTMLElement): void {
     const panel = el('div', 'glossary-import')
     const area = el('textarea', 'control')
     area.rows = 6
-    area.placeholder = '每行一条：原文,译文（也支持制表符或竖线分隔）'
+    area.placeholder = ot('opt.s79', '每行一条：原文,译文（也支持制表符或竖线分隔）')
     area.spellcheck = false
 
     const bar = el('div', 'glossary-import-bar')
-    const fileLabel = el('label', 'btn btn-ghost', '选择文件 (.csv/.txt)')
+    const fileLabel = el('label', 'btn btn-ghost', ot('opt.s80', '选择文件 (.csv/.txt)'))
     const fileInput = el('input')
     fileInput.type = 'file'
     fileInput.accept = '.csv,.txt,text/csv,text/plain'
@@ -1410,12 +1403,12 @@ function renderGlossary(root: HTMLElement): void {
       fileInput.value = '' // 允许重复选择同一文件
     })
     fileLabel.append(fileInput)
-    const importBtn = el('button', 'btn', '导入')
+    const importBtn = el('button', 'btn', ot('opt.s81', '导入'))
     importBtn.type = 'button'
     importBtn.addEventListener('click', () => {
       const { terms, skipped } = parseGlossaryImport(area.value)
       if (terms.length === 0) {
-        glossaryImportMsg = skipped > 0 ? `已导入 0 条，跳过 ${skipped} 行` : '请先粘贴文本或选择文件'
+        glossaryImportMsg = skipped > 0 ? ot('opt.s82', `已导入 0 条，跳过 ${skipped} 行`) : ot('opt.s83', '请先粘贴文本或选择文件')
         renderContent()
         return
       }
@@ -1423,7 +1416,7 @@ function renderGlossary(root: HTMLElement): void {
       const merged = mergeGlossaryTerms(config.glossary, terms)
       const added = merged.length - before
       const totalSkipped = skipped + (terms.length - added)
-      glossaryImportMsg = `已导入 ${added} 条，跳过 ${totalSkipped} 行`
+      glossaryImportMsg = ot('opt.s84', `已导入 ${added} 条，跳过 ${totalSkipped} 行`)
       void patchConfig({ glossary: merged })
     })
     bar.append(fileLabel, importBtn)
@@ -1438,15 +1431,15 @@ function renderGlossary(root: HTMLElement): void {
 // ===== 标签页 6：生词本 =====
 
 function renderWords(root: HTMLElement): void {
-  const c = card('生词本', '浏览、导出或导入收藏的生词；数据仅保存在本机浏览器中。')
+  const c = card(ot('opt.s85', '生词本'), ot('opt.s86', '浏览、导出或导入收藏的生词；数据仅保存在本机浏览器中。'))
 
   // 工具条：导出 / 导入
   const toolbar = el('div', 'toolbar')
-  const exportBtn = el('button', 'btn btn-secondary', '导出 JSON')
+  const exportBtn = el('button', 'btn btn-secondary', ot('opt.s87', '导出 JSON'))
   exportBtn.type = 'button'
   exportBtn.disabled = words.length === 0
   exportBtn.addEventListener('click', exportWords)
-  const importLabel = el('label', 'btn btn-secondary', '导入 JSON')
+  const importLabel = el('label', 'btn btn-secondary', ot('opt.s88', '导入 JSON'))
   const fileInput = el('input')
   fileInput.type = 'file'
   fileInput.accept = '.json,application/json'
@@ -1461,14 +1454,14 @@ function renderWords(root: HTMLElement): void {
   c.append(toolbar)
 
   if (!wordsLoaded) {
-    c.append(el('p', 'empty', '加载中…'))
+    c.append(el('p', 'empty', ot('opt.s89', '加载中…')))
   } else if (words.length === 0) {
-    c.append(el('p', 'empty', '生词本为空，划词后点击「收藏」即可添加。'))
+    c.append(el('p', 'empty', ot('opt.s90', '生词本为空，划词后点击「收藏」即可添加。')))
   } else {
     const table = el('table', 'data-table')
     const thead = el('thead')
     const htr = el('tr')
-    for (const h of ['单词', '释义', '上下文摘录', '来源', '创建时间', '遇到次数', '到期时间', '操作']) {
+    for (const h of [ot('opt.s91', '单词'), ot('opt.s92', '释义'), ot('opt.s93', '上下文摘录'), ot('opt.s94', '来源'), ot('opt.s95', '创建时间'), ot('opt.s96', '遇到次数'), ot('opt.s97', '到期时间'), ot('opt.s75', '操作')]) {
       htr.append(el('th', undefined, h))
     }
     thead.append(htr)
@@ -1498,9 +1491,9 @@ function renderWords(root: HTMLElement): void {
       tr.append(srcTd)
       tr.append(el('td', undefined, fmtTime(w.createdAt)))
       tr.append(el('td', undefined, String(w.seenCount)))
-      tr.append(el('td', undefined, w.card.due <= now ? '已到期' : fmtTime(w.card.due)))
+      tr.append(el('td', undefined, w.card.due <= now ? ot('opt.s98', '已到期') : fmtTime(w.card.due)))
       const opTd = el('td')
-      const del = el('button', 'btn-link-danger', '删除')
+      const del = el('button', 'btn-link-danger', ot('opt.s76', '删除'))
       del.type = 'button'
       del.addEventListener('click', () => {
         void removeWord(w.id)
@@ -1529,9 +1522,9 @@ async function loadWords(): Promise<void> {
 async function removeWord(id: string): Promise<void> {
   try {
     await sendBg<null>({ kind: 'deleteWord', id })
-    showToast('已删除')
+    showToast(ot('opt.s99', '已删除'))
   } catch (e) {
-    showToast(`删除失败：${errMsg(e)}`)
+    showToast(ot('opt.s100', `删除失败：${errMsg(e)}`))
   }
   wordsLoaded = false
   await loadWords()
@@ -1555,10 +1548,10 @@ function parseWordsJson(text: string): { words: Array<{ word: string; context?: 
   try {
     parsed = JSON.parse(text)
   } catch {
-    return { error: '不是有效的 JSON 文件' }
+    return { error: ot('opt.s101', '不是有效的 JSON 文件') }
   }
   if (!Array.isArray(parsed)) {
-    return { error: '应为生词数组' }
+    return { error: ot('opt.s102', '应为生词数组') }
   }
   const valid: Array<{ word: string; context?: string; translation?: string }> = []
   for (const item of parsed) {
@@ -1572,7 +1565,7 @@ function parseWordsJson(text: string): { words: Array<{ word: string; context?: 
     })
   }
   if (valid.length === 0) {
-    return { error: '未找到有效生词（每项需包含非空的 word 字段）' }
+    return { error: ot('opt.s103', '未找到有效生词（每项需包含非空的 word 字段）') }
   }
   return { words: valid }
 }
@@ -1581,7 +1574,7 @@ async function importWords(file: File): Promise<void> {
   const text = await file.text()
   const result = parseWordsJson(text)
   if (result.error || !result.words) {
-    showToast(`导入失败：${result.error ?? '未知错误'}`)
+    showToast(ot('opt.s104', `导入失败：${result.error ?? '未知错误'}`))
     return
   }
   let okCount = 0
@@ -1593,7 +1586,7 @@ async function importWords(file: File): Promise<void> {
       // 单条失败跳过，继续导入其余
     }
   }
-  showToast(`已导入 ${okCount} 条生词`)
+  showToast(ot('opt.s105', `已导入 ${okCount} 条生词`))
   wordsLoaded = false
   await loadWords()
 }
@@ -1602,19 +1595,19 @@ async function importWords(file: File): Promise<void> {
 
 function renderInteraction(root: HTMLElement): void {
   // 悬停翻译
-  const hoverCard = card('悬停翻译', '按住修饰键并将鼠标悬停在段落上，即可只翻译该段。')
+  const hoverCard = card(ot('opt.s106', '悬停翻译'), ot('opt.s107', '按住修饰键并将鼠标悬停在段落上，即可只翻译该段。'))
   hoverCard.append(
-    fieldRow('启用悬停翻译', buildSwitch(config.hover.enabled, '悬停翻译', (v) => {
+    fieldRow(ot('opt.s108', '启用悬停翻译'), buildSwitch(config.hover.enabled, ot('opt.s106', '悬停翻译'), (v) => {
       void patchConfig({ hover: { ...config.hover, enabled: v } })
     })),
     fieldRow(
-      '修饰键',
+      ot('opt.s109', '修饰键'),
       buildEnumSelect(
         [
           { value: 'alt', label: 'Alt' },
           { value: 'ctrl', label: 'Ctrl' },
           { value: 'shift', label: 'Shift' },
-          { value: 'none', label: '直接悬停（无需按键）' },
+          { value: 'none', label: ot('opt.s110', '直接悬停（无需按键）') },
         ],
         config.hover.key,
         (v) => {
@@ -1625,18 +1618,18 @@ function renderInteraction(root: HTMLElement): void {
   )
 
   // 划词翻译
-  const selCard = card('划词翻译', '选中文字后弹出气泡，可查看译文、AI 解析并收藏生词。')
+  const selCard = card(ot('opt.s111', '划词翻译'), ot('opt.s112', '选中文字后弹出气泡，可查看译文、AI 解析并收藏生词。'))
   selCard.append(
-    fieldRow('启用划词翻译', buildSwitch(config.selection.enabled, '划词翻译', (v) => {
+    fieldRow(ot('opt.s113', '启用划词翻译'), buildSwitch(config.selection.enabled, ot('opt.s111', '划词翻译'), (v) => {
       void patchConfig({ selection: { ...config.selection, enabled: v } })
     })),
     fieldRow(
-      '显示模式',
+      ot('opt.s114', '显示模式'),
       buildRadioGroup(
         'selectionMode',
         [
-          { value: 'bilingual', label: '双语对照', desc: '同时展示原文与译文' },
-          { value: 'translationOnly', label: '仅译文', desc: '气泡中只显示译文' },
+          { value: 'bilingual', label: ot('opt.s115', '双语对照'), desc: ot('opt.s116', '同时展示原文与译文') },
+          { value: 'translationOnly', label: ot('opt.s117', '仅译文'), desc: ot('opt.s118', '气泡中只显示译文') },
         ],
         config.selection.mode,
         (v) => {
@@ -1647,18 +1640,18 @@ function renderInteraction(root: HTMLElement): void {
   )
 
   // 输入框翻译
-  const inputCard = card('输入框翻译', '在输入框 / 文本域中触发翻译，译文仅供参考，不会自动替换你的输入。')
+  const inputCard = card(ot('opt.s119', '输入框翻译'), ot('opt.s120', '在输入框 / 文本域中触发翻译，译文仅供参考，不会自动替换你的输入。'))
   inputCard.append(
-    fieldRow('启用输入框翻译', buildSwitch(config.input.enabled, '输入框翻译', (v) => {
+    fieldRow(ot('opt.s121', '启用输入框翻译'), buildSwitch(config.input.enabled, ot('opt.s119', '输入框翻译'), (v) => {
       void patchConfig({ input: { ...config.input, enabled: v } })
     })),
     fieldRow(
-      '触发方式',
+      ot('opt.s122', '触发方式'),
       buildRadioGroup(
         'inputTrigger',
         [
-          { value: 'altEnter', label: 'Alt + Enter', desc: '在输入框中按 Alt+Enter 立即翻译' },
-          { value: 'tripleSpace', label: '三连空格', desc: '连续输入三个空格自动翻译' },
+          { value: 'altEnter', label: 'Alt + Enter', desc: ot('opt.s123', '在输入框中按 Alt+Enter 立即翻译') },
+          { value: 'tripleSpace', label: ot('opt.s124', '三连空格'), desc: ot('opt.s125', '连续输入三个空格自动翻译') },
         ],
         config.input.trigger,
         (v) => {
@@ -1667,7 +1660,7 @@ function renderInteraction(root: HTMLElement): void {
       ),
     ),
     fieldRow(
-      '输入框目标语言',
+      ot('opt.s126', '输入框目标语言'),
       buildLangSelect(config.input.targetLang, {
         excludeAuto: true,
         onChange: (code) => {
@@ -1678,26 +1671,26 @@ function renderInteraction(root: HTMLElement): void {
   )
 
   // 悬浮球
-  const ballCard = card('悬浮球', '在页面右下角显示悬浮球，点击即可快速开关整页翻译。')
+  const ballCard = card(ot('opt.s127', '悬浮球'), ot('opt.s128', '在页面右下角显示悬浮球，点击即可快速开关整页翻译。'))
   ballCard.append(
-    fieldRow('启用悬浮球', buildSwitch(config.floatingBall.enabled, '悬浮球', (v) => {
+    fieldRow(ot('opt.s129', '启用悬浮球'), buildSwitch(config.floatingBall.enabled, ot('opt.s127', '悬浮球'), (v) => {
       void patchConfig({ floatingBall: { enabled: v } })
     })),
   )
 
   // 视频与会议字幕
   const subCard = card(
-    '视频与会议字幕翻译',
-    'YouTube 双语字幕；Google Meet / Teams / Zoom 会议实时字幕翻译。',
+    ot('opt.s130', '视频与会议字幕翻译'),
+    ot('opt.s131', 'YouTube 双语字幕；Google Meet / Teams / Zoom 会议实时字幕翻译。'),
   )
   subCard.append(
-    fieldRow('启用字幕翻译', buildSwitch(config.subtitles.enabled, '字幕翻译', (v) => {
+    fieldRow(ot('opt.s132', '启用字幕翻译'), buildSwitch(config.subtitles.enabled, ot('opt.s133', '字幕翻译'), (v) => {
       void patchConfig({ subtitles: { ...config.subtitles, enabled: v } })
     })),
-    fieldRow('YouTube 双语字幕', buildSwitch(config.subtitles.youtube, 'YouTube 字幕', (v) => {
+    fieldRow(ot('opt.s134', 'YouTube 双语字幕'), buildSwitch(config.subtitles.youtube, ot('opt.s135', 'YouTube 字幕'), (v) => {
       void patchConfig({ subtitles: { ...config.subtitles, youtube: v } })
     })),
-    fieldRow('会议字幕（Meet/Teams/Zoom）', buildSwitch(config.subtitles.meet, '会议字幕', (v) => {
+    fieldRow(ot('opt.s136', '会议字幕（Meet/Teams/Zoom）'), buildSwitch(config.subtitles.meet, ot('opt.s137', '会议字幕'), (v) => {
       void patchConfig({ subtitles: { ...config.subtitles, meet: v } })
     })),
   )
@@ -1716,7 +1709,7 @@ async function init(): Promise<void> {
     config = await sendBg<Config>({ kind: 'getConfig' })
     if (urlLang && UI_LANGS.some((l) => l.code === urlLang)) config.uiLang = urlLang as Config['uiLang']
   } catch (e) {
-    app.textContent = `加载配置失败：${errMsg(e)}`
+    app.textContent = ot('opt.s138', `加载配置失败：${errMsg(e)}`)
     return
   }
   buildShell(app)

@@ -9,6 +9,7 @@
  * content/selection.ts 的写作面板读取同一键作为初始值。
  */
 import type { Config } from '../shared/config'
+import { t, resolveUiLang } from '../shared/i18n'
 
 /** 与 content/selection.ts 共享的存储键（默认语气/篇幅）。 */
 export const WRITING_PREFS_KEY = 'tv:writing_prefs_v1'
@@ -28,19 +29,6 @@ export interface WritingTabCtx {
   ) => HTMLElementTagNameMap[K]
 }
 
-const TONE_OPTIONS: ReadonlyArray<{ value: string; label: string }> = [
-  { value: 'default', label: '默认' },
-  { value: 'formal', label: '正式' },
-  { value: 'casual', label: '随意' },
-  { value: 'humorous', label: '幽默' },
-  { value: 'professional', label: '专业' },
-]
-
-const LENGTH_OPTIONS: ReadonlyArray<{ value: string; label: string }> = [
-  { value: 'default', label: '默认' },
-  { value: 'shorter', label: '更短' },
-  { value: 'longer', label: '更长' },
-]
 
 /** 原生滑动开关（与 main.ts 的 buildSwitch 同款，本地实现避免跨模块依赖）。 */
 function buildSwitch(
@@ -117,22 +105,37 @@ function savePrefs(prefs: WritingPrefs): void {
 }
 
 export function renderWritingTab(root: HTMLElement, ctx: WritingTabCtx): void {
+  const ot = (key: string, zh: string): string => t(key, resolveUiLang(ctx.config.uiLang), zh)
+
+  const TONE_OPTIONS: ReadonlyArray<{ value: string; label: string }> = [
+    { value: 'default', label: ot('opt.writing.s1', '默认') },
+    { value: 'formal', label: ot('opt.writing.s2', '正式') },
+    { value: 'casual', label: ot('opt.writing.s3', '随意') },
+    { value: 'humorous', label: ot('opt.writing.s4', '幽默') },
+    { value: 'professional', label: ot('opt.writing.s5', '专业') },
+  ]
+
+  const LENGTH_OPTIONS: ReadonlyArray<{ value: string; label: string }> = [
+    { value: 'default', label: ot('opt.writing.s1', '默认') },
+    { value: 'shorter', label: ot('opt.writing.s6', '更短') },
+    { value: 'longer', label: ot('opt.writing.s7', '更长') },
+  ]
   const { config, patchConfig, el } = ctx
 
   // ===== 卡片 1：开关 =====
   const head = el('div', 'mask-head')
   const headTexts = el('div')
   headTexts.append(
-    el('h2', 'card-title', 'AI 写作助手'),
+    el('h2', 'card-title', ot('opt.writing.s8', 'AI 写作助手')),
     el(
       'p',
       'card-desc',
-      '选中文字后在气泡中点击「✍ 写作」，可对所选文本进行润色、续写、总结、回复或翻译；结果支持一键复制或替换选区。',
+      ot('opt.writing.s9', '选中文字后在气泡中点击「✍ 写作」，可对所选文本进行润色、续写、总结、回复或翻译；结果支持一键复制或替换选区。'),
     ),
   )
   head.append(
     headTexts,
-    buildSwitch(ctx, config.writing.enabled, 'AI 写作助手', (v) => {
+    buildSwitch(ctx, config.writing.enabled, ot('opt.writing.s8', 'AI 写作助手'), (v) => {
       patchConfig({ writing: { ...config.writing, enabled: v } })
     }),
   )
@@ -142,8 +145,8 @@ export function renderWritingTab(root: HTMLElement, ctx: WritingTabCtx): void {
   // ===== 卡片 2：默认偏好（语气 / 篇幅） =====
   const prefCard = card(
     ctx,
-    '默认偏好',
-    '写作面板的初始语气与篇幅；面板中可临时调整，不影响此处默认值。',
+    ot('opt.writing.s10', '默认偏好'),
+    ot('opt.writing.s11', '写作面板的初始语气与篇幅；面板中可临时调整，不影响此处默认值。'),
   )
   const toneSel = buildEnumSelect(ctx, TONE_OPTIONS, 'default', (v) => {
     loadPrefs((p) => savePrefs({ ...p, tone: v }))
@@ -156,19 +159,19 @@ export function renderWritingTab(root: HTMLElement, ctx: WritingTabCtx): void {
     lengthSel.value = p.length
   })
   prefCard.append(
-    fieldRow(ctx, '默认语气', toneSel),
-    fieldRow(ctx, '默认篇幅', lengthSel),
-    el('p', 'hint', '偏好保存在本机，仅作为划词写作面板的初始选项。'),
+    fieldRow(ctx, ot('opt.writing.s12', '默认语气'), toneSel),
+    fieldRow(ctx, ot('opt.writing.s13', '默认篇幅'), lengthSel),
+    el('p', 'hint', ot('opt.writing.s14', '偏好保存在本机，仅作为划词写作面板的初始选项。')),
   )
 
   // ===== 卡片 3：功能说明 =====
-  const infoCard = card(ctx, '功能说明', 'AI 写作助手的能力与使用方式。')
+  const infoCard = card(ctx, ot('opt.writing.s15', '功能说明'), ot('opt.writing.s16', 'AI 写作助手的能力与使用方式。'))
   const items: Array<[string, string]> = [
-    ['润色', '改进表达与流畅度，保持原意不变'],
-    ['续写', '沿原文风格自然续写一段'],
-    ['总结', '提炼 3-5 条要点（bullet 列表）'],
-    ['回复', '针对邮件 / 评论生成得体回复，可搭配语气选项'],
-    ['翻译', '把所选文本翻译为目标语言'],
+    [ot('opt.writing.s17', '润色'), ot('opt.writing.s18', '改进表达与流畅度，保持原意不变')],
+    [ot('opt.writing.s19', '续写'), ot('opt.writing.s20', '沿原文风格自然续写一段')],
+    [ot('opt.writing.s21', '总结'), ot('opt.writing.s22', '提炼 3-5 条要点（bullet 列表）')],
+    [ot('opt.writing.s23', '回复'), ot('opt.writing.s24', '针对邮件 / 评论生成得体回复，可搭配语气选项')],
+    [ot('opt.writing.s25', '翻译'), ot('opt.writing.s26', '把所选文本翻译为目标语言')],
   ]
   for (const [name, desc] of items) {
     const p = el('p', 'hint')
@@ -176,9 +179,9 @@ export function renderWritingTab(root: HTMLElement, ctx: WritingTabCtx): void {
     infoCard.append(p)
   }
   infoCard.append(
-    el('p', 'hint', '入口：网页中选中文字 → 划词气泡 →「✍ 写作」。'),
-    el('p', 'hint', '引擎：复用「翻译引擎」页的 OpenAI 兼容 / DeepSeek 配置，需先填写 API Key。'),
-    el('p', 'hint', '隐私：所选文本仅发送至你配置的 AI 端点，扩展无中间服务器、无遥测。'),
+    el('p', 'hint', ot('opt.writing.s27', '入口：网页中选中文字 → 划词气泡 →「✍ 写作」。')),
+    el('p', 'hint', ot('opt.writing.s28', '引擎：复用「翻译引擎」页的 OpenAI 兼容 / DeepSeek 配置，需先填写 API Key。')),
+    el('p', 'hint', ot('opt.writing.s29', '隐私：所选文本仅发送至你配置的 AI 端点，扩展无中间服务器、无遥测。')),
   )
 
   root.append(switchCard, prefCard, infoCard)

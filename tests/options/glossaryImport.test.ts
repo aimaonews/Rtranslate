@@ -17,7 +17,7 @@ function cfgWithCustomEngines(): Config {
 }
 
 describe("getEngineOptions", () => {
-  it("AI猫排第一，内置引擎按固定顺序随后", () => {
+  it("aimao 排第一，内置引擎按固定顺序随后", () => {
     const opts = getEngineOptions(structuredClone(DEFAULT_CONFIG));
     expect(opts.map((o) => o.id)).toEqual([
       "aimao",
@@ -31,7 +31,7 @@ describe("getEngineOptions", () => {
       "gemini",
       "libretranslate",
     ]);
-    expect(opts[0].name).toBe("AI猫");
+    expect(opts[0].name).toBe("aimao");
     expect(opts[0].icon).toContain("aimao");
   });
 

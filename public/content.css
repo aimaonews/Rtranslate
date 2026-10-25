@@ -229,6 +229,7 @@ tv-translation.tv-style-frosted .tv-tr-inner {
 }
 .tv-sel-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 4px;
   margin-top: 8px;
   padding-top: 8px;
@@ -239,10 +240,14 @@ tv-translation.tv-style-frosted .tv-tr-inner {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 26px;
+  /* 长文案语言（de/fr/pt）不再被固定高度裁切：高度随内容、文案不换行，放不下时整排按钮换行 */
+  min-height: 26px;
+  height: auto;
   box-sizing: border-box;
-  padding: 0 8px;
+  padding: 3px 8px;
   font: 12px var(--tv-font);
+  white-space: nowrap;
+  flex-shrink: 0;
   border-radius: 6px;
   border: 1px solid transparent;
   background: transparent;

@@ -14,7 +14,8 @@ const CDP = 'http://127.0.0.1:9222'
 const EXT = 'chrome-extension://obommjidieecapideeemdlcegndcdnkd'
 const OUT = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'store-assets', 'screenshots')
 
-const AIMAO_KEY = 'sk-f0e72732f7e734de2747c7e0cfc0c295822c00096756ccbc28e1675a987467a9'
+const AIMAO_KEY = process.env.AIMAO_KEY ?? ''
+if (!AIMAO_KEY) { console.error('请先设置环境变量 AIMAO_KEY'); process.exit(1) }
 const AIMAO_MODEL = 'glm-5.3-flash'
 
 const [uiLang, targetLang, dirName, pagePath = 'test-page-shot.html'] = process.argv.slice(2)

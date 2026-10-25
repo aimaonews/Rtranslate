@@ -40,6 +40,7 @@ const flush = (): Promise<void> => new Promise((r) => setTimeout(r, 0));
 
 /** 全新模块 + DOM + chrome stub 启动设置页（默认落在「通用」标签页） */
 async function boot(cfg: Config): Promise<void> {
+  cfg.uiLang = cfg.uiLang === 'auto' ? 'zh-CN' : cfg.uiLang; // 测试断言中文界面：auto 在测试环境解析为英文
   stored = cfg;
   installChromeStub();
   document.body.innerHTML = '<div id="app"></div>';
@@ -78,6 +79,7 @@ function cardByTitle(title: string): HTMLElement {
 describe("通用标签页", () => {
   it("渲染：无源语言卡片，有界面语言下拉（10 项，当前 zh-CN）", async () => {
     const cfg = structuredClone(DEFAULT_CONFIG);
+    cfg.uiLang = 'zh-CN'; // 测试断言中文界面：显式中文（默认 auto 在测试环境解析为英文）
     cfg.uiLang = 'zh-CN';
     await boot(cfg);
 
@@ -108,6 +110,7 @@ describe("通用标签页", () => {
 
   it("zh-CN 时导航标签与页标题和现状完全一致", async () => {
     const cfg = structuredClone(DEFAULT_CONFIG);
+    cfg.uiLang = 'zh-CN'; // 测试断言中文界面：显式中文（默认 auto 在测试环境解析为英文）
     cfg.uiLang = 'zh-CN';
     await boot(cfg);
 
@@ -142,6 +145,7 @@ describe("通用标签页", () => {
 
   it("切换界面语言为 English：写入 config.uiLang 并即时重渲染，导航/页标题/通用页标签变英文", async () => {
     const cfg = structuredClone(DEFAULT_CONFIG);
+    cfg.uiLang = 'zh-CN'; // 测试断言中文界面：显式中文（默认 auto 在测试环境解析为英文）
     cfg.uiLang = 'zh-CN';
     await boot(cfg);
 

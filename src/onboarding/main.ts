@@ -17,6 +17,7 @@ import type { Config } from '../shared/config'
 import { fmt, resolveUiLang, t, type ResolvedLang } from '../shared/i18n'
 import { watchUiLang } from '../shared/i18n-pages'
 import type { BgRequest, BgResponse, TranslateResult } from '../shared/protocol'
+import { BUILTIN_ENGINES, engineName } from '../shared/engines'
 
 // ===== 消息封装 =====
 
@@ -24,7 +25,7 @@ import type { BgRequest, BgResponse, TranslateResult } from '../shared/protocol'
 async function sendBg<T>(msg: BgRequest): Promise<T> {
   const resp = (await chrome.runtime.sendMessage(msg)) as BgResponse<T> | undefined
   if (!resp || typeof resp !== 'object' || !('ok' in resp)) {
-    throw new Error('background 未响应')
+    throw new Error(L('ob.s1', 'background 未响应'))
   }
   if (!resp.ok) throw new Error(resp.error)
   return resp.data
@@ -38,19 +39,6 @@ interface EngineOption {
   /** public/engine-icons/ 下的相对路径 */
   icon: string
 }
-
-const BUILTIN_ENGINES: ReadonlyArray<{ id: string; name: string }> = [
-  { id: 'aimao', name: 'AI猫' },
-  { id: 'google', name: '谷歌免费' },
-  { id: 'bing', name: '微软免费' },
-  { id: 'mymemory', name: 'MyMemory 免费' },
-  { id: 'deepl', name: 'DeepL' },
-  { id: 'openai', name: 'OpenAI 兼容' },
-  { id: 'deepseek', name: 'DeepSeek' },
-  { id: 'claude', name: 'Claude (Anthropic)' },
-  { id: 'gemini', name: 'Gemini (Google)' },
-  { id: 'libretranslate', name: 'LibreTranslate' },
-]
 
 const ENGINE_ICON_FILES: Record<string, string> = {
   aimao: 'engine-icons/aimao.png',
@@ -74,7 +62,7 @@ function engineIconFor(id: string): string {
 
 /** 引擎下拉选项：AI猫第一 + 内置引擎 + config.engine.customEngines（id 为 custom:<entryId>） */
 function getEngineOptions(cfg: Config): EngineOption[] {
-  const options: EngineOption[] = BUILTIN_ENGINES.map((e) => ({ ...e, icon: engineIconFor(e.id) }))
+  const options: EngineOption[] = BUILTIN_ENGINES.map((e) => ({ id: e.id, name: engineName(e, uiLang), icon: engineIconFor(e.id) }))
   for (const entry of cfg.engine.customEngines) {
     options.push({
       id: `custom:${entry.id}`,
@@ -113,7 +101,7 @@ function errMsg(e: unknown): string {
 // ===== 页面状态 =====
 
 const appRoot = document.getElementById('app') as HTMLElement | null
-if (appRoot === null) throw new Error('缺少 #app 根节点')
+if (appRoot === null) throw new Error(L('ob.s2', '缺少 #app 根节点'))
 const app: HTMLElement = appRoot
 
 let config: Config | null = null
@@ -329,16 +317,16 @@ function buildDisplayModeRadios(cfg: Config): HTMLElement {
     {
       value: 'bilingual',
       labelKey: 'onboarding.mode.bilingual',
-      labelZh: '双语对照',
+      labelZh: L('ob.s3', '双语对照'),
       descKey: 'onboarding.mode.bilingualDesc',
-      descZh: '保留原文，在下方显示译文',
+      descZh: L('ob.s4', '保留原文，在下方显示译文'),
     },
     {
       value: 'translationOnly',
       labelKey: 'onboarding.mode.translationOnly',
-      labelZh: '仅译文',
+      labelZh: L('ob.s5', '仅译文'),
       descKey: 'onboarding.mode.translationOnlyDesc',
-      descZh: '隐藏原文，只显示译文',
+      descZh: L('ob.s6', '隐藏原文，只显示译文'),
     },
   ]
   for (const m of MODES) {
@@ -483,7 +471,7 @@ function renderDemoResult(): void {
   } else if (demoState === 'loading') {
     demoResultEl.textContent = L('onboarding.demo.translating', '翻译中…')
   } else if (demoState === 'error') {
-    demoResultEl.textContent = `${L('onboarding.demo.failed', '翻译失败：')}${demoText}`
+    demoResultEl.textContent = L('ob.s7', `${L('onboarding.demo.failed', '翻译失败：')}${demoText}`)
   } else {
     demoResultEl.textContent = demoText
   }
@@ -625,7 +613,7 @@ async function boot(): Promise<void> {
     uiLang = resolveUiLang(config.uiLang)
   } catch (e) {
     // 配置未加载成功时无法得知 uiLang，按默认中文展示错误
-    app.textContent = `${t('onboarding.loadFailed', 'zh-CN', '加载配置失败：')}${errMsg(e)}`
+    app.textContent = L('ob.s8', `${t('onboarding.loadFailed', 'zh-CN', '加载配置失败：')}${errMsg(e)}`)
     return
   }
   render()

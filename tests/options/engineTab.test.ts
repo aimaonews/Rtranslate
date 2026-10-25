@@ -47,6 +47,7 @@ const flush = (): Promise<void> => new Promise((r) => setTimeout(r, 0));
 
 /** 全新模块 + DOM + chrome stub 启动设置页，并切到「翻译引擎」标签页 */
 async function bootEngineTab(cfg: Config): Promise<void> {
+  cfg.uiLang = cfg.uiLang === 'auto' ? 'zh-CN' : cfg.uiLang;
   stored = cfg;
   installChromeStub();
   document.body.innerHTML = '<div id="app"></div>';
@@ -73,6 +74,7 @@ function btnByText(text: string, root: ParentNode = document): HTMLButtonElement
 
 function cfgWithCustomEngine(): Config {
   const cfg = structuredClone(DEFAULT_CONFIG);
+    cfg.uiLang = 'zh-CN'; // 测试断言中文界面：显式中文（默认 auto 在测试环境解析为英文）
   const entry: CustomEngine = {
     id: "abc123",
     name: "我的引擎",
@@ -89,6 +91,7 @@ function cfgWithCustomEngine(): Config {
 describe("翻译引擎标签页（统一卡片）", () => {
   it("融合为一个统一板块：选择器、配置区、测试连接同卡片，无独立引擎/管理卡片", async () => {
     const cfg = structuredClone(DEFAULT_CONFIG);
+    cfg.uiLang = 'zh-CN'; // 测试断言中文界面：显式中文（默认 auto 在测试环境解析为英文）
     cfg.engine.provider = "aimao";
     await bootEngineTab(cfg);
 
@@ -103,11 +106,12 @@ describe("翻译引擎标签页（统一卡片）", () => {
     const area = qs<HTMLElement>(".engine-config", engineCard);
     expect(area.textContent).toContain("https://api.aimao.today/v1");
     expect(area.textContent).toContain("API Key");
-    expect(qs<HTMLAnchorElement>(".apikey-link", area).textContent).toBe("获取API秘钥");
+    expect(qs<HTMLAnchorElement>(".apikey-link", area).textContent).toBe("获取 API 密钥");
   });
 
   it("引擎选择联动配置区：切换到 DeepL 后显示 DeepL 密钥字段并写入 provider", async () => {
     const cfg = structuredClone(DEFAULT_CONFIG);
+    cfg.uiLang = 'zh-CN'; // 测试断言中文界面：显式中文（默认 auto 在测试环境解析为英文）
     cfg.engine.provider = "aimao";
     await bootEngineTab(cfg);
 
@@ -184,6 +188,7 @@ describe("翻译引擎标签页（统一卡片）", () => {
 
   it("选择器底部「＋ 添加自定义引擎」：展开新建表单（模板预填、高级区收起、默认 '{}'），保存后自动设为当前引擎", async () => {
     const cfg = structuredClone(DEFAULT_CONFIG);
+    cfg.uiLang = 'zh-CN'; // 测试断言中文界面：显式中文（默认 auto 在测试环境解析为英文）
     cfg.engine.provider = "aimao";
     await bootEngineTab(cfg);
 
@@ -227,6 +232,7 @@ describe("翻译引擎标签页（统一卡片）", () => {
 
   it("新建表单可取消：取消后回到当前引擎配置，不产生新引擎", async () => {
     const cfg = structuredClone(DEFAULT_CONFIG);
+    cfg.uiLang = 'zh-CN'; // 测试断言中文界面：显式中文（默认 auto 在测试环境解析为英文）
     cfg.engine.provider = "aimao";
     await bootEngineTab(cfg);
 
@@ -259,6 +265,7 @@ describe("翻译引擎标签页（统一卡片）", () => {
 
   it("免费引擎（google）配置区显示开箱即用提示", async () => {
     const cfg = structuredClone(DEFAULT_CONFIG);
+    cfg.uiLang = 'zh-CN'; // 测试断言中文界面：显式中文（默认 auto 在测试环境解析为英文）
     cfg.engine.provider = "google";
     await bootEngineTab(cfg);
 
@@ -269,6 +276,7 @@ describe("翻译引擎标签页（统一卡片）", () => {
 
   it("测试连接按钮保留在统一卡片底部并回报结果", async () => {
     const cfg = structuredClone(DEFAULT_CONFIG);
+    cfg.uiLang = 'zh-CN'; // 测试断言中文界面：显式中文（默认 auto 在测试环境解析为英文）
     cfg.engine.provider = "aimao";
     await bootEngineTab(cfg);
 

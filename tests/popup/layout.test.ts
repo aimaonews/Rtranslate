@@ -73,7 +73,7 @@ beforeEach(() => {
 
 describe('popup 控制区行序', () => {
   it('语言对第一行，其后依次为 引擎/专家/显示模式/译文样式/悬停/划词/悬浮球', async () => {
-    const app = await mount(DEFAULT_CONFIG)
+    const app = await mount({ ...DEFAULT_CONFIG, uiLang: 'zh-CN' })
     const rows = Array.from(app.querySelectorAll('.controls > .row')).map(
       (r) => (r as HTMLElement).dataset.row,
     )
@@ -90,7 +90,7 @@ describe('popup 控制区行序', () => {
   })
 
   it('当前网站区保持在最后', async () => {
-    const app = await mount(DEFAULT_CONFIG)
+    const app = await mount({ ...DEFAULT_CONFIG, uiLang: 'zh-CN' })
     const controls = app.querySelector('.controls') as HTMLElement
     const last = controls.lastElementChild as HTMLElement
     expect(last.classList.contains('site-rules')).toBe(true)
@@ -98,7 +98,7 @@ describe('popup 控制区行序', () => {
   })
 
   it('语言对行：源语言 + → + 目标语言 双下拉并排', async () => {
-    const app = await mount(DEFAULT_CONFIG)
+    const app = await mount({ ...DEFAULT_CONFIG, uiLang: 'zh-CN' })
     const row = app.querySelector('.row[data-row="lang"]') as HTMLElement
     const selects = row.querySelectorAll('select')
     expect(selects).toHaveLength(2)
@@ -129,13 +129,13 @@ describe('源语言下拉', () => {
   })
 
   it('默认配置选中 auto', async () => {
-    const app = await mount(DEFAULT_CONFIG)
+    const app = await mount({ ...DEFAULT_CONFIG, uiLang: 'zh-CN' })
     const src = app.querySelector('select[data-lang-kind="source"]') as HTMLSelectElement
     expect(src.value).toBe('auto')
   })
 
   it('切换源语言写入 config.general.sourceLang 并向当前 tab 热同步 configChanged', async () => {
-    const app = await mount(DEFAULT_CONFIG)
+    const app = await mount({ ...DEFAULT_CONFIG, uiLang: 'zh-CN' })
     const src = app.querySelector('select[data-lang-kind="source"]') as HTMLSelectElement
     runtimeMessages.length = 0
     tabMessages.length = 0
@@ -151,7 +151,7 @@ describe('源语言下拉', () => {
   })
 
   it('目标语言下拉保持原逻辑：切换写 targetLang 并热同步', async () => {
-    const app = await mount(DEFAULT_CONFIG)
+    const app = await mount({ ...DEFAULT_CONFIG, uiLang: 'zh-CN' })
     const tgt = app.querySelector('select[data-lang-kind="target"]') as HTMLSelectElement
     expect(tgt.value).toBe('zh-CN')
     tabMessages.length = 0
@@ -165,7 +165,7 @@ describe('源语言下拉', () => {
 
 describe('popup i18n（uiLang）', () => {
   it('zh-CN：行标签/按钮/状态文案与中文现状一致', async () => {
-    const app = await mount(DEFAULT_CONFIG)
+    const app = await mount({ ...DEFAULT_CONFIG, uiLang: 'zh-CN' })
     expect(rowLabel(app, 'engine')).toBe('翻译引擎')
     expect(rowLabel(app, 'expert')).toBe('AI 专家')
     expect(rowLabel(app, 'displayMode')).toBe('显示模式')

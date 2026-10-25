@@ -6,6 +6,7 @@
 import { t, resolveUiLang } from '../shared/i18n'
 import '../shared/i18n-dicts' // 注册 7 语言通用字典（副作用导入，否则 t() 查不到回退中文）
 import type { Config } from '../shared/config'
+import { previewGlyph } from '../shared/uiLabels'
 
 let lang: string = 'zh-CN'
 
@@ -18,7 +19,7 @@ export function ct(key: string, zhFallback: string): string {
   return t(key, lang, zhFallback)
 }
 
-/** 悬浮球字符：中文界面用「译」，其余用「A」（沉浸式翻译惯例） */
+/** 悬浮球字符：中文界面用「译」，其余用「A」（与预览字符同一规则） */
 export function ballGlyph(): string {
-  return lang.startsWith('zh') ? '译' : 'A'
+  return previewGlyph(lang)
 }

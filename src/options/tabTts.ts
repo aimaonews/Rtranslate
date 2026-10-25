@@ -10,6 +10,7 @@
  */
 import type { Config } from '../shared/config'
 import { TtsPlayer } from '../content/tts'
+import { t, resolveUiLang } from '../shared/i18n'
 
 export interface TtsTabCtx {
   config: Config
@@ -76,26 +77,27 @@ function buildSliderRow(ctx: TtsTabCtx, spec: SliderSpec): { row: HTMLElement; i
 }
 
 /** 试听例句：跟随目标语言，覆盖多句以演示按句连播。 */
-function sampleText(targetLang: string): string {
-  if (targetLang.startsWith('zh')) return '你好，这是 Rtranslate 的朗读试听。语速、音调与音量会即时生效。感谢使用！'
-  if (targetLang.startsWith('ja')) return 'こんにちは。Rtranslate の読み上げテストです。速度と音調はすぐに反映されます。'
+function sampleText(targetLang: string, ot: (key: string, zh: string) => string): string {
+  if (targetLang.startsWith('zh')) return ot('opt.tts.s1', '你好，这是 Rtranslate 的朗读试听。语速、音调与音量会即时生效。感谢使用！')
+  if (targetLang.startsWith('ja')) return ot('opt.tts.s2', 'こんにちは。Rtranslate の読み上げテストです。速度と音調はすぐに反映されます。')
   if (targetLang.startsWith('ko')) return '안녕하세요. Rtranslate 읽어주기 테스트입니다. 속도와 음높이가 바로 적용됩니다.'
   return 'Hello! This is a Rtranslate speech test. Rate, pitch and volume apply instantly. Thanks for listening!'
 }
 
 export function renderTtsTab(root: HTMLElement, ctx: TtsTabCtx): void {
+  const ot = (key: string, zh: string): string => t(key, resolveUiLang(ctx.config.uiLang), zh)
   const { config, patchConfig, el } = ctx
 
   // ===== 卡片 1：朗读参数 =====
   const paramCard = card(
     ctx,
-    '朗读参数',
-    '作用于划词气泡的「朗读」按钮；长文本自动按句切分、顺序连播，播放中可随时停止。',
+    ot('opt.tts.s3', '朗读参数'),
+    ot('opt.tts.s4', '作用于划词气泡的「朗读」按钮；长文本自动按句切分、顺序连播，播放中可随时停止。'),
   )
 
   const rate = buildSliderRow(ctx, {
-    label: '语速',
-    ariaLabel: '语速',
+    label: ot('opt.tts.s5', '语速'),
+    ariaLabel: ot('opt.tts.s5', '语速'),
     min: 0.5,
     max: 2.0,
     step: 0.1,
@@ -104,8 +106,8 @@ export function renderTtsTab(root: HTMLElement, ctx: TtsTabCtx): void {
     onCommit: (v) => patchConfig({ tts: { ...config.tts, rate: v } }),
   })
   const pitch = buildSliderRow(ctx, {
-    label: '音调',
-    ariaLabel: '音调',
+    label: ot('opt.tts.s6', '音调'),
+    ariaLabel: ot('opt.tts.s6', '音调'),
     min: 0.5,
     max: 1.5,
     step: 0.1,
@@ -114,8 +116,8 @@ export function renderTtsTab(root: HTMLElement, ctx: TtsTabCtx): void {
     onCommit: (v) => patchConfig({ tts: { ...config.tts, pitch: v } }),
   })
   const volume = buildSliderRow(ctx, {
-    label: '音量',
-    ariaLabel: '音量',
+    label: ot('opt.tts.s7', '音量'),
+    ariaLabel: ot('opt.tts.s7', '音量'),
     min: 0,
     max: 1,
     step: 0.05,
@@ -126,34 +128,34 @@ export function renderTtsTab(root: HTMLElement, ctx: TtsTabCtx): void {
   paramCard.append(rate.row, pitch.row, volume.row)
 
   // 试听：用滑块当前值（含未提交的拖动中数值）朗读示例句；播放中按钮变「停止」
-  const previewBtn = el('button', 'btn btn-secondary', previewPlayer.isPlaying() ? '停止' : '试听')
+  const previewBtn = el('button', 'btn btn-secondary', previewPlayer.isPlaying() ? ot('opt.tts.s8', '停止') : ot('opt.tts.s9', '试听'))
   previewBtn.type = 'button'
   previewBtn.addEventListener('click', () => {
     if (previewPlayer.isPlaying()) {
       previewPlayer.stop()
       return
     }
-    previewPlayer.speak(sampleText(config.general.targetLang), {
+    previewPlayer.speak(sampleText(config.general.targetLang, ot), {
       rate: Number(rate.input.value),
       pitch: Number(pitch.input.value),
       volume: Number(volume.input.value),
     })
   })
   previewPlayer.onStateChange = (playing) => {
-    previewBtn.textContent = playing ? '停止' : '试听'
+    previewBtn.textContent = playing ? ot('opt.tts.s8', '停止') : ot('opt.tts.s9', '试听')
   }
   const previewRow = el('div', 'field')
-  previewRow.append(el('span', 'field-label', '试听'), previewBtn)
-  paramCard.append(previewRow, el('p', 'hint', '示例句包含多个句子，可验证按句连播效果；语种按文本自动判定。'))
+  previewRow.append(el('span', 'field-label', ot('opt.tts.s9', '试听')), previewBtn)
+  paramCard.append(previewRow, el('p', 'hint', ot('opt.tts.s10', '示例句包含多个句子，可验证按句连播效果；语种按文本自动判定。')))
 
   // ===== 卡片 2：功能说明 =====
-  const infoCard = card(ctx, '功能说明', '朗读能力的使用方式与边界。')
+  const infoCard = card(ctx, ot('opt.tts.s11', '功能说明'), ot('opt.tts.s12', '朗读能力的使用方式与边界。'))
   const items: Array<[string, string]> = [
-    ['入口', '网页中选中文字 → 划词气泡 →「朗读」；播放中按钮变为「停止」，再点即停'],
-    ['连播', '长文本按句末标点（。！？.!?；;）切分，逐句播放，规避浏览器对超长文本的截断'],
-    ['语种', '按文本中中文/日文假名/韩文谚文占比自动选择 zh-CN / ja-JP / ko-KR，其余默认 en-US'],
-    ['音色', '由浏览器与操作系统的语音包决定，可在系统设置中安装更多语音'],
-    ['隐私', '朗读完全在本机进行（Web Speech API），文本不发送到任何服务器'],
+    [ot('opt.tts.s13', '入口'), ot('opt.tts.s14', '网页中选中文字 → 划词气泡 →「朗读」；播放中按钮变为「停止」，再点即停')],
+    [ot('opt.tts.s15', '连播'), ot('opt.tts.s16', '长文本按句末标点（。！？.!?；;）切分，逐句播放，规避浏览器对超长文本的截断')],
+    [ot('opt.tts.s17', '语种'), ot('opt.tts.s18', '按文本中中文/日文假名/韩文谚文占比自动选择 zh-CN / ja-JP / ko-KR，其余默认 en-US')],
+    [ot('opt.tts.s19', '音色'), ot('opt.tts.s20', '由浏览器与操作系统的语音包决定，可在系统设置中安装更多语音')],
+    [ot('opt.tts.s21', '隐私'), ot('opt.tts.s22', '朗读完全在本机进行（Web Speech API），文本不发送到任何服务器')],
   ]
   for (const [name, desc] of items) {
     const p = el('p', 'hint')

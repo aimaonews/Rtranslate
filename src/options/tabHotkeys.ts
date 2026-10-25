@@ -11,6 +11,7 @@
  * 样式只复用 style.css 已有类名（card/field/control/btn 等），不新增 CSS。
  */
 import { DEFAULT_CONFIG, type Config } from '../shared/config'
+import { t, resolveUiLang } from '../shared/i18n'
 
 export interface HotkeysTabCtx {
   config: Config
@@ -20,11 +21,6 @@ export interface HotkeysTabCtx {
 
 type HotkeyId = keyof Config['hotkeys']
 
-const ACTIONS: { id: HotkeyId; label: string; hint: string }[] = [
-  { id: 'togglePage', label: '切换整页翻译', hint: '默认 Alt+T' },
-  { id: 'compare', label: '对比窗（多引擎对照）', hint: '默认 Alt+D' },
-  { id: 'openOptions', label: '打开设置页', hint: '默认 Alt+O' },
-]
 
 /** e.code → 规格主键名：KeyT→'T'、Digit1→'1'、Space/Enter/F5 等原样。 */
 function codeToKeyName(code: string): string {
@@ -39,21 +35,29 @@ function isModifierCode(code: string): boolean {
 }
 
 export function renderHotkeysTab(root: HTMLElement, ctx: HotkeysTabCtx): void {
+  const ot = (key: string, zh: string): string => t(key, resolveUiLang(ctx.config.uiLang), zh)
+
+  const ACTIONS: { id: HotkeyId; label: string; hint: string }[] = [
+    { id: 'togglePage', label: ot('opt.hotkeys.s1', '切换整页翻译'), hint: ot('opt.hotkeys.s2', '默认 Alt+T') },
+    { id: 'compare', label: ot('opt.hotkeys.s3', '对比窗（多引擎对照）'), hint: ot('opt.hotkeys.s4', '默认 Alt+D') },
+    { id: 'openOptions', label: ot('opt.hotkeys.s5', '打开设置页'), hint: ot('opt.hotkeys.s6', '默认 Alt+O') },
+  ]
+
   const { config, patchConfig, el } = ctx
   const hotkeys = config.hotkeys ?? DEFAULT_CONFIG.hotkeys
 
   const card = el('section', 'card')
-  card.append(el('h2', 'card-title', '快捷键'))
+  card.append(el('h2', 'card-title', ot('opt.hotkeys.s7', '快捷键')))
   card.append(
     el(
       'p',
       'card-desc',
-      '点击输入框后按下新的组合键即可修改；Esc 取消，Backspace/Delete 清空（清空 = 禁用该快捷键）。' +
-        'Mac 上 Ctrl 与 Cmd 等价，无需分别配置。',
+      ot('opt.hotkeys.s8', '点击输入框后按下新的组合键即可修改；Esc 取消，Backspace/Delete 清空（清空 = 禁用该快捷键）。') +
+        ot('opt.hotkeys.s9', 'Mac 上 Ctrl 与 Cmd 等价，无需分别配置。'),
     ),
   )
   card.append(
-    el('p', 'card-desc', '默认快捷键：Alt+T 切换整页翻译、Alt+D 对比窗、Alt+O 打开设置。'),
+    el('p', 'card-desc', ot('opt.hotkeys.s10', '默认快捷键：Alt+T 切换整页翻译、Alt+D 对比窗、Alt+O 打开设置。')),
   )
 
   for (const action of ACTIONS) {
@@ -64,7 +68,7 @@ export function renderHotkeysTab(root: HTMLElement, ctx: HotkeysTabCtx): void {
     card.append(buildRow(action, value, save, ctx))
   }
 
-  const resetBtn = el('button', 'btn btn-secondary', '恢复默认')
+  const resetBtn = el('button', 'btn btn-secondary', ot('opt.hotkeys.s11', '恢复默认'))
   resetBtn.setAttribute('type', 'button')
   resetBtn.style.marginTop = '12px'
   resetBtn.addEventListener('click', () => {
@@ -83,20 +87,21 @@ function buildRow(
   ctx: HotkeysTabCtx,
 ): HTMLElement {
   const { el } = ctx
+  const ot = (key: string, zh: string): string => t(key, resolveUiLang(ctx.config.uiLang), zh)
 
   const input = el('input', 'control') as HTMLInputElement
   input.type = 'text'
   input.readOnly = true
   input.spellcheck = false
-  input.value = value || '未设置（已禁用）'
+  input.value = value || ot('opt.hotkeys.s12', '未设置（已禁用）')
   input.style.width = '240px'
   input.style.cursor = 'pointer'
-  input.setAttribute('aria-label', `${action.label}快捷键`)
+  input.setAttribute('aria-label', ot('opt.hotkeys.s13', `${action.label}快捷键`))
 
   let capturing = false
   const stopCapture = (): void => {
     capturing = false
-    input.value = value || '未设置（已禁用）'
+    input.value = value || ot('opt.hotkeys.s12', '未设置（已禁用）')
     input.style.borderColor = ''
     input.blur()
   }
@@ -104,7 +109,7 @@ function buildRow(
   input.addEventListener('click', () => {
     if (capturing) return
     capturing = true
-    input.value = '请按快捷键…'
+    input.value = ot('opt.hotkeys.s14', '请按快捷键…')
     input.style.borderColor = 'var(--tv-primary)'
     input.focus()
   })
@@ -133,7 +138,7 @@ function buildRow(
 
     if (isModifierCode(e.code)) {
       // 仅按下修饰键：实时预览组合，等待主键
-      input.value = parts.length ? `${parts.join('+')}+…` : '请按快捷键…'
+      input.value = parts.length ? `${parts.join('+')}+…` : ot('opt.hotkeys.s14', '请按快捷键…')
       return
     }
     parts.push(codeToKeyName(e.code))

@@ -7,10 +7,10 @@ function cfg(customEngines: Config['engine']['customEngines'] = []): Config {
 }
 
 describe('getEngineOptions', () => {
-  it('AI猫(aimao) 排第一', () => {
+  it('aimao 排第一', () => {
     const options = getEngineOptions(cfg())
     expect(options[0].id).toBe('aimao')
-    expect(options[0].name).toBe('AI猫')
+    expect(options[0].name).toBe('aimao')
   })
 
   it('内置引擎顺序：aimao 后依次为 google/bing/mymemory/deepl/openai/deepseek/claude/gemini/libretranslate', () => {

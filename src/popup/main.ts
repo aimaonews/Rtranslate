@@ -12,7 +12,7 @@
 import { LANGS, COMMON_LANG_CODES, langNative } from '../core/langs'
 import { TRANSLATION_STYLES, getStyle } from '../core/styles'
 import type { Config } from '../shared/config'
-import { t } from '../shared/i18n'
+import { t, resolveUiLang } from '../shared/i18n'
 import '../shared/i18n-dicts'
 import type {
   BgRequest,
@@ -21,6 +21,8 @@ import type {
   PageStateResult,
   StatsResult,
 } from '../shared/protocol'
+import { BUILTIN_ENGINES, engineName } from '../shared/engines'
+import { styleName, expertName, previewGlyph } from '../shared/uiLabels'
 
 // ===== 消息封装 =====
 
@@ -28,7 +30,7 @@ import type {
 async function sendBg<T>(msg: BgRequest): Promise<T> {
   const resp = (await chrome.runtime.sendMessage(msg)) as BgResponse<T> | undefined
   if (!resp || typeof resp !== 'object' || !('ok' in resp)) {
-    throw new Error('background 未响应')
+    throw new Error(ot('pop.s1', 'background 未响应'))
   }
   if (!resp.ok) throw new Error(resp.error)
   return resp.data
@@ -92,20 +94,6 @@ export interface EngineOption {
   icon: string
 }
 
-/** 内置引擎（AI猫置顶）；旧单 custom 引擎保留配置兼容，但不再出现在下拉中 */
-const BUILTIN_ENGINES: ReadonlyArray<{ id: string; name: string }> = [
-  { id: 'aimao', name: 'AI猫' },
-  { id: 'google', name: '谷歌免费' },
-  { id: 'bing', name: '微软免费' },
-  { id: 'mymemory', name: 'MyMemory 免费' },
-  { id: 'deepl', name: 'DeepL' },
-  { id: 'openai', name: 'OpenAI 兼容' },
-  { id: 'deepseek', name: 'DeepSeek' },
-  { id: 'claude', name: 'Claude (Anthropic)' },
-  { id: 'gemini', name: 'Gemini (Google)' },
-  { id: 'libretranslate', name: 'LibreTranslate' },
-]
-
 /** 引擎图标文件映射（构建后位于 dist/engine-icons/，引用走 chrome.runtime.getURL） */
 export const ENGINE_ICON_FILES: Record<string, string> = {
   aimao: 'engine-icons/aimao.png',
@@ -129,7 +117,7 @@ export function engineIconFor(id: string): string {
 
 /** 引擎下拉选项：AI猫第一 + 内置引擎 + config.engine.customEngines（id 为 custom:<entryId>） */
 export function getEngineOptions(cfg: Config): EngineOption[] {
-  const options: EngineOption[] = BUILTIN_ENGINES.map((e) => ({ ...e, icon: engineIconFor(e.id) }))
+  const options: EngineOption[] = BUILTIN_ENGINES.map((e) => ({ id: e.id, name: engineName(e, resolveUiLang(cfg.uiLang)), icon: engineIconFor(e.id) }))
   for (const entry of cfg.engine.customEngines) {
     options.push({ id: `custom:${entry.id}`, name: entry.name, icon: engineIconFor(`custom:${entry.id}`) })
   }
@@ -170,7 +158,8 @@ const SWATCH_CSS: Record<string, Record<string, string>> = {
 }
 
 function makeSwatch(styleId: string): HTMLSpanElement {
-  const s = el('span', 'swatch', '译')
+  const ui = resolveUiLang(config.uiLang)
+  const s = el('span', 'swatch', previewGlyph(ui))
   const css = SWATCH_CSS[styleId] ?? SWATCH_CSS['soft-gray']
   if (css) {
     for (const [k, v] of Object.entries(css)) s.style.setProperty(k, v)
@@ -181,6 +170,8 @@ function makeSwatch(styleId: string): HTMLSpanElement {
 // ===== 状态 =====
 
 let config: Config
+/** 当前界面语言文案（zh-CN 回退原文；auto 先解析为浏览器语言） */
+const ot = (key: string, zh: string): string => t(key, resolveUiLang(config.uiLang), zh)
 
 type PageStatus = 'loading' | 'unavailable' | PageStateResult
 let pageStatus: PageStatus = 'loading'
@@ -210,8 +201,8 @@ function buildHeader(root: HTMLElement): void {
 
   const gear = el('button', 'icon-btn')
   gear.type = 'button'
-  gear.title = t('settings', config.uiLang, '设置')
-  gear.setAttribute('aria-label', t('popup.openSettings', config.uiLang, '打开设置'))
+  gear.title = t('settings', resolveUiLang(config.uiLang), '设置')
+  gear.setAttribute('aria-label', t('popup.openSettings', resolveUiLang(config.uiLang), '打开设置'))
   gear.innerHTML = GEAR_SVG
   gear.addEventListener('click', () => {
     void sendBg<null>({ kind: 'command', cmd: 'openOptions' }).catch(ignore)
@@ -245,7 +236,7 @@ async function handleToggle(): Promise<void> {
   try {
     await sendBg<null>({ kind: 'command', cmd: 'togglePage' })
   } catch (e) {
-    statusText.textContent = `${t('popup.opFailed', config.uiLang, '操作失败：')}${errMsg(e)}`
+    statusText.textContent = ot('pop.s2', `${t('popup.opFailed', resolveUiLang(config.uiLang), '操作失败：')}${errMsg(e)}`)
     mainBtn.disabled = false
     return
   }
@@ -270,7 +261,7 @@ function renderStatus(): void {
     statusDot.classList.add(pageStatus.failedCount > 0 ? 'is-err' : 'is-ok')
   }
 
-  const ui = config.uiLang
+  const ui = resolveUiLang(config.uiLang)
   if (pageStatus === 'loading') {
     statusText.textContent = t('popup.statusLoading', ui, '正在检测页面状态…')
     mainBtn.textContent = t('popup.translatePage', ui, '翻译此页')
@@ -312,7 +303,7 @@ function buildRow(label: string, control: HTMLElement, key?: string): HTMLElemen
 function buildLangSelect(kind: 'source' | 'target'): HTMLSelectElement {
   const sel = el('select', 'control')
   sel.dataset.langKind = kind
-  const ui = config.uiLang
+  const ui = resolveUiLang(config.uiLang)
   const commonGroup = el('optgroup')
   commonGroup.label = t('popup.commonLangs', ui, '常用语言')
   const allGroup = el('optgroup')
@@ -362,6 +353,7 @@ function buildLangPairRow(): HTMLElement {
 
 /** 译文样式自定义下拉：12 种 TRANSLATION_STYLES，每项带小色块示意 */
 function buildStyleSelect(): HTMLElement {
+  const ui = resolveUiLang(config.uiLang)
   const wrap = el('div', 'style-select')
 
   const btn = el('button', 'style-select-btn')
@@ -374,7 +366,7 @@ function buildStyleSelect(): HTMLElement {
   function renderButton(): void {
     btn.replaceChildren(
       makeSwatch(config.style.styleId),
-      el('span', 'style-select-text', getStyle(config.style.styleId).name),
+      el('span', 'style-select-text', styleName(getStyle(config.style.styleId), ui)),
       el('span', 'caret'),
     )
   }
@@ -392,7 +384,7 @@ function buildStyleSelect(): HTMLElement {
     const item = el('li', 'style-select-item')
     item.setAttribute('role', 'option')
     item.dataset.styleId = style.id
-    item.append(makeSwatch(style.id), el('span', 'style-select-item-name', style.name))
+    item.append(makeSwatch(style.id), el('span', 'style-select-item-name', styleName(style, ui)))
     item.addEventListener('click', () => {
       close()
       void patchConfig({ style: { styleId: style.id } }, true)
@@ -539,10 +531,8 @@ function buildExpertSelect(): HTMLElement {
   list.setAttribute('role', 'listbox')
 
   function currentName(): string {
-    return (
-      config.experts.list.find((e) => e.id === config.experts.activeId)?.name ??
-      config.experts.activeId
-    )
+    const found = config.experts.list.find((e) => e.id === config.experts.activeId)
+    return found ? expertName(found, resolveUiLang(config.uiLang)) : config.experts.activeId
   }
 
   function renderButton(): void {
@@ -563,13 +553,13 @@ function buildExpertSelect(): HTMLElement {
     item.setAttribute('role', 'option')
     item.dataset.expertId = expert.id
     item.append(
-      el('span', 'style-select-item-name', expert.name),
+      el('span', 'style-select-item-name', expertName(expert, resolveUiLang(config.uiLang))),
       el(
         'span',
         'expert-tag',
         expert.builtin
-          ? t('popup.expertBuiltin', config.uiLang, '内置')
-          : t('popup.expertCustom', config.uiLang, '自定义'),
+          ? t('popup.expertBuiltin', resolveUiLang(config.uiLang), '内置')
+          : t('popup.expertCustom', resolveUiLang(config.uiLang), '自定义'),
       ),
     )
     item.addEventListener('click', () => {
@@ -707,7 +697,7 @@ function toggleSiteRule(kind: 'always' | 'never', on: boolean): void {
 
 function buildControls(root: HTMLElement): void {
   const section = el('section', 'controls')
-  const ui = config.uiLang
+  const ui = resolveUiLang(config.uiLang)
 
   // 1. 语言对：源语言 → 目标语言（双下拉并排）
   section.append(buildLangPairRow())
@@ -788,7 +778,7 @@ function buildControls(root: HTMLElement): void {
 // ===== 底部 =====
 
 function buildFooter(root: HTMLElement): void {
-  const ui = config.uiLang
+  const ui = resolveUiLang(config.uiLang)
   const footer = el('footer', 'footer')
   statsText = el('span', 'stats-text', t('popup.statsEmpty', ui, '生词 — · 到期 —'))
   const tutorialLink = el('a', 'footer-link', t('popup.tutorial', ui, '使用教程'))
@@ -831,7 +821,7 @@ export async function init(): Promise<void> {
     config = await sendBg<Config>({ kind: 'getConfig' })
   } catch (e) {
     // 配置未加载成功时无法得知 uiLang，按默认中文展示
-    app.textContent = `${t('popup.loadFailed', config?.uiLang ?? 'zh-CN', '加载配置失败：')}${errMsg(e)}`
+    app.textContent = ot('pop.s3', `${t('popup.loadFailed', config?.uiLang ?? 'zh-CN', '加载配置失败：')}${errMsg(e)}`)
     return
   }
 

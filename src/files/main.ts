@@ -22,6 +22,8 @@ import { fmt, resolveUiLang, t, type ResolvedLang } from '../shared/i18n'
 import { watchUiLang } from '../shared/i18n-pages'
 import { parserFor, SUPPORTED_EXTS } from './parsers'
 import type { DocParser, OutputMode, ParsedDoc } from './parsers/types'
+import { previewGlyph } from '../shared/uiLabels'
+import { langNative } from '../core/langs'
 
 const MAX_FILE_SIZE = 20 * 1024 * 1024 // 20MB
 const BATCH_MAX_TEXTS = 50
@@ -35,7 +37,7 @@ export const PE_MAX_SEGMENTS = 200
 async function sendBg<T>(msg: BgRequest): Promise<T> {
   const resp = (await chrome.runtime.sendMessage(msg)) as BgResponse<T> | undefined
   if (!resp || typeof resp !== 'object' || !('ok' in resp)) {
-    throw new Error('background 未响应')
+    throw new Error(L('files.s1', 'background 未响应'))
   }
   if (!resp.ok) throw new Error(resp.error)
   return resp.data
@@ -157,16 +159,16 @@ const MODE_DEFS: ReadonlyArray<{
   {
     value: 'bilingual',
     labelKey: 'files.mode.bilingual',
-    labelZh: '双语对照',
+    labelZh: L('files.s2', '双语对照'),
     descKey: 'files.mode.bilingual.desc',
-    descZh: '原文与译文上下对照，便于校对',
+    descZh: L('files.s3', '原文与译文上下对照，便于校对'),
   },
   {
     value: 'translationOnly',
     labelKey: 'files.mode.translationOnly',
-    labelZh: '仅译文',
+    labelZh: L('files.s4', '仅译文'),
     descKey: 'files.mode.translationOnly.desc',
-    descZh: '只保留译文，版式更干净',
+    descZh: L('files.s5', '只保留译文，版式更干净'),
   },
 ]
 
@@ -203,7 +205,7 @@ function buildLayout(): void {
 
   // 品牌
   const brand = el('div', 'brand')
-  brand.append(el('div', 'brand-logo', '译'))
+  brand.append(el('div', 'brand-logo', previewGlyph(uiLang)))
   const brandText = el('div', 'brand-text')
   brandNameEl = el('div', 'brand-name', L('files.title', 'Rtranslate · 文档翻译'))
   brandText.append(brandNameEl)
@@ -254,7 +256,7 @@ function buildLayout(): void {
     if (l.code === 'auto') continue
     const opt = document.createElement('option')
     opt.value = l.code
-    opt.textContent = `${l.zh}（${l.en}）`
+    opt.textContent = langNative(l.code)
     langSelect.append(opt)
   }
   langField.append(langSelect)
@@ -528,7 +530,7 @@ async function downloadCurrent(): Promise<void> {
   const run = state
   if (!run?.doc || !run.translations || run.running) return
   downloadBtn.disabled = true
-  setStatusT('files.status.building', '正在生成文件…')
+  setStatusT('files.status.building', L('files.s6', '正在生成文件…'))
   try {
     const built = await run.parser.build(run.doc, run.translations, getMode())
     if (state !== run) return // 生成期间用户移除了文件
@@ -544,7 +546,7 @@ async function downloadCurrent(): Promise<void> {
       run.edited.size > 0
         ? fmt(L('files.status.exportedNote', '，含 {n} 段校订'), { n: run.edited.size })
         : ''
-    setStatusT('files.status.exported', '已导出 {file}{note}', 'ok', { file: built.filename, note })
+    setStatusT('files.status.exported', L('files.s7', '已导出 {file}{note}'), 'ok', { file: built.filename, note })
   } catch (e) {
     if (state === run) setStatus(errMsg(e), 'error')
   } finally {
@@ -643,15 +645,15 @@ function setStatusT(
 function sendBgWithAbort<T>(msg: BgRequest, signal: AbortSignal): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     if (signal.aborted) {
-      reject(new DOMException('已取消', 'AbortError'))
+      reject(new DOMException(L('files.s8', '已取消'), 'AbortError'))
       return
     }
-    const onAbort = (): void => reject(new DOMException('已取消', 'AbortError'))
+    const onAbort = (): void => reject(new DOMException(L('files.s8', '已取消'), 'AbortError'))
     signal.addEventListener('abort', onAbort, { once: true })
     sendBg<T>(msg).then(
       (v) => {
         signal.removeEventListener('abort', onAbort)
-        if (signal.aborted) reject(new DOMException('已取消', 'AbortError'))
+        if (signal.aborted) reject(new DOMException(L('files.s8', '已取消'), 'AbortError'))
         else resolve(v)
       },
       (e: unknown) => {
@@ -677,7 +679,7 @@ async function runTranslation(): Promise<void> {
   if (run.edited.size > 0) toast(L('files.toast.peReset', '重新翻译将清空已校订内容'))
   peCard.style.display = 'none'
   setProgress(0, 0)
-  setStatusT('files.status.parsing', '正在解析文件…')
+  setStatusT('files.status.parsing', L('files.s9', '正在解析文件…'))
 
   try {
     const buf = await file.arrayBuffer()
@@ -686,11 +688,11 @@ async function runTranslation(): Promise<void> {
     run.doc = doc
     const total = doc.segments.length
     if (total === 0) {
-      setStatusT('files.error.empty', '文件中没有可翻译的文本', 'error')
+      setStatusT('files.error.empty', L('files.s10', '文件中没有可翻译的文本'), 'error')
       return
     }
     setProgress(0, total)
-    setStatusT('files.status.translating', '正在翻译…')
+    setStatusT('files.status.translating', L('files.s11', '正在翻译…'))
 
     const targetLang = langSelect.value
     const translations = new Map<number, string>()
@@ -727,14 +729,14 @@ async function runTranslation(): Promise<void> {
     await Promise.all(Array.from({ length: CONCURRENCY }, () => worker()))
 
     if (controller.signal.aborted) {
-      setStatusT('files.status.cancelledProgress', '已取消（已完成 {done} / {total} 片段）', 'warn', {
+      setStatusT('files.status.cancelledProgress', L('files.s12', '已取消（已完成 {done} / {total} 片段）'), 'warn', {
         done,
         total,
       })
       return
     }
     if (failed >= total) {
-      setStatusT('files.status.allFailed', '翻译全部失败，请检查引擎配置后重试', 'error')
+      setStatusT('files.status.allFailed', L('files.s13', '翻译全部失败，请检查引擎配置后重试'), 'error')
       return
     }
 
@@ -749,18 +751,18 @@ async function runTranslation(): Promise<void> {
     if (failed > 0) {
       setStatusT(
         'files.status.donePartial',
-        '完成：{ok} 个片段已翻译，{failed} 个片段失败已保留原文',
+        L('files.s14', '完成：{ok} 个片段已翻译，{failed} 个片段失败已保留原文'),
         'warn',
         { ok: total - failed, failed },
       )
     } else {
-      setStatusT('files.status.done', '翻译完成，共 {total} 个片段', 'ok', { total })
+      setStatusT('files.status.done', L('files.s15', '翻译完成，共 {total} 个片段'), 'ok', { total })
     }
     setProgress(total, total)
   } catch (e) {
     if (state !== run) return
     if (e instanceof DOMException && e.name === 'AbortError') {
-      setStatusT('files.status.cancelled', '已取消', 'warn')
+      setStatusT('files.status.cancelled', L('files.s8', '已取消'), 'warn')
     } else {
       setStatus(errMsg(e), 'error')
     }
@@ -835,14 +837,16 @@ function refreshTexts(): void {
 // ===== 初始化 =====
 
 async function init(): Promise<void> {
+  // 布局不阻塞于配置（测试/异常环境也要立即可用）；品牌字符在配置到达后刷新
   buildLayout()
   bindFileEvents()
   bindRunEvents()
-  // 先读界面语言，再以该语言重渲染文案；默认目标语言跟随全局配置
   try {
     const config = await sendBg<Config>({ kind: 'getConfig' })
     uiLang = resolveUiLang(config.uiLang)
     refreshTexts()
+    const logo = document.querySelector('.brand-logo')
+    if (logo) logo.textContent = previewGlyph(uiLang)
     const def = config.general.targetLang
     if (def && def !== 'auto') langSelect.value = def
   } catch {
