@@ -11,7 +11,7 @@
  * 样式只复用 style.css 已有类名（card/field/control/btn 等），不新增 CSS。
  */
 import { DEFAULT_CONFIG, type Config } from '../shared/config'
-import { t, resolveUiLang } from '../shared/i18n'
+import { fmt, t, resolveUiLang } from '../shared/i18n'
 
 export interface HotkeysTabCtx {
   config: Config
@@ -96,7 +96,7 @@ function buildRow(
   input.value = value || ot('opt.hotkeys.s12', '未设置（已禁用）')
   input.style.width = '240px'
   input.style.cursor = 'pointer'
-  input.setAttribute('aria-label', ot('opt.hotkeys.s13', `${action.label}快捷键`))
+  input.setAttribute('aria-label', fmt(ot('opt.hotkeys.s13', '{p1}快捷键'), { p1: action.label }))
 
   let capturing = false
   const stopCapture = (): void => {

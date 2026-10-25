@@ -18,7 +18,7 @@ import {
   parseGlossaryCsv,
   type BuiltinLibraryMeta,
 } from '../background/glossaryLibs'
-import { t, resolveUiLang } from '../shared/i18n'
+import { fmt, t, resolveUiLang } from '../shared/i18n'
 
 /** 模块级界面语言（renderGlossaryLibsTab 进入时设置；sendBg 等无 ctx 的辅助函数用） */
 let moduleUiLang: string = 'zh-CN'
@@ -134,8 +134,8 @@ function buildBuiltinCard(
     metas.forEach((meta, i) => {
       const row = el('div', 'field')
       const labelWrap = el('span', 'field-label')
-      labelWrap.append(el('span', undefined, moduleUiLang.startsWith('zh') ? meta.zhName : meta.name))
-      const countText = counts[i] >= 0 ? ot('opt.glossaryLibs.s6', `${counts[i]} 条`) : ot('opt.glossaryLibs.s7', '加载失败')
+      labelWrap.append(el('span', undefined, moduleUiLang === 'zh-CN' ? meta.zhName : meta.name))
+      const countText = counts[i] >= 0 ? fmt(ot('opt.glossaryLibs.s6', '{p1} 条'), { p1: counts[i] }) : ot('opt.glossaryLibs.s7', '加载失败')
       const countTag = el('span', 'tag', countText)
       countTag.style.marginLeft = '8px'
       labelWrap.append(countTag)
@@ -145,7 +145,7 @@ function buildBuiltinCard(
       sw.type = 'checkbox'
       sw.className = 'switch'
       sw.checked = on
-      sw.setAttribute('aria-label', ot('opt.glossaryLibs.s8', `启用内置库：${moduleUiLang.startsWith('zh') ? meta.zhName : meta.name}`))
+      sw.setAttribute('aria-label', fmt(ot('opt.glossaryLibs.s8', '启用内置库：{p1}'), { p1: moduleUiLang === 'zh-CN' ? meta.zhName : meta.name }))
       sw.addEventListener('change', () => {
         patchLibs({ ...libsOf(ctx.config), enabled: { ...libsOf(ctx.config).enabled, [meta.id]: sw.checked } })
       })
@@ -179,7 +179,7 @@ function buildCustomCard(
       const row = el('div', 'field')
       const labelWrap = el('span', 'field-label')
       labelWrap.append(el('span', undefined, lib.name))
-      const countTag = el('span', 'tag', ot('opt.glossaryLibs.s12', `${lib.terms.length} 条`))
+      const countTag = el('span', 'tag', fmt(ot('opt.glossaryLibs.s12', '{p1} 条'), { p1: lib.terms.length }))
       countTag.style.marginLeft = '8px'
       labelWrap.append(countTag)
 
@@ -193,7 +193,7 @@ function buildCustomCard(
       sw.type = 'checkbox'
       sw.className = 'switch'
       sw.checked = enabled
-      sw.setAttribute('aria-label', ot('opt.glossaryLibs.s13', `启用自定义库：${lib.name}`))
+      sw.setAttribute('aria-label', fmt(ot('opt.glossaryLibs.s13', '启用自定义库：{p1}'), { p1: lib.name }))
       sw.addEventListener('change', () => {
         patchLibs({ ...libsOf(ctx.config), enabled: { ...libsOf(ctx.config).enabled, [lib.id]: sw.checked } })
       })
@@ -366,7 +366,7 @@ function buildExtractCard(
       .catch((e: unknown) => {
         extractState.results = []
         extractState.checked = new Set()
-        extractState.error = ot('opt.glossaryLibs.s29', `提取失败：${errMsg(e)}`)
+        extractState.error = fmt(ot('opt.glossaryLibs.s29', '提取失败：{p1}'), { p1: errMsg(e) })
       })
       .finally(() => {
         extractState.busy = false
@@ -394,7 +394,7 @@ function buildExtractCard(
       const cb = el('input') as HTMLInputElement
       cb.type = 'checkbox'
       cb.checked = extractState.checked.has(i)
-      cb.setAttribute('aria-label', ot('opt.glossaryLibs.s32', `选择 ${t.src}`))
+      cb.setAttribute('aria-label', fmt(ot('opt.glossaryLibs.s32', '选择 {p1}'), { p1: t.src }))
       cb.addEventListener('change', () => {
         if (cb.checked) extractState.checked.add(i)
         else extractState.checked.delete(i)
@@ -444,15 +444,15 @@ function buildExtractCard(
           const added = picked.filter((t) => !existing.has(t.src.toLowerCase()))
           return { ...l, terms: [...l.terms, ...added] }
         })
-        extractState.notice = ot('opt.glossaryLibs.s36', `已加入 ${picked.length} 条到所选库。`)
+        extractState.notice = fmt(ot('opt.glossaryLibs.s36', '已加入 {p1} 条到所选库。'), { p1: picked.length })
         patchLibs({ ...cur, custom: nextCustom })
       } else {
         const created: CustomGlossaryLibrary = {
           id: `custom-${genId()}`,
-          name: ot('opt.glossaryLibs.s37', `AI 提取 ${new Date().toLocaleDateString('zh-CN')}`),
+          name: fmt(ot('opt.glossaryLibs.s37', 'AI 提取 {p1}'), { p1: new Date().toLocaleDateString('zh-CN') }),
           terms: picked,
         }
-        extractState.notice = ot('opt.glossaryLibs.s38', `已新建库「${created.name}」（${picked.length} 条）。`)
+        extractState.notice = fmt(ot('opt.glossaryLibs.s38', '已新建库「{p1}」（{p2} 条）。'), { p1: created.name, p2: picked.length })
         patchLibs({ ...cur, custom: [...cur.custom, created] })
       }
       extractState.error = ''

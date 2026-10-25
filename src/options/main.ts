@@ -10,7 +10,7 @@
 import { LANGS, COMMON_LANG_CODES, langNative } from '../core/langs'
 import { TRANSLATION_STYLES } from '../core/styles'
 import type { Config, CustomEngine, GlossaryTerm } from '../shared/config'
-import { t, resolveUiLang, UI_LANGS, type UiLangCode } from '../shared/i18n'
+import { fmt, t, resolveUiLang, UI_LANGS, type UiLangCode } from '../shared/i18n'
 import '../shared/i18n-dicts'
 import { genId } from '../shared/ids'
 import type { BgRequest, BgResponse, TestEngineResult, WordItem } from '../shared/protocol'
@@ -275,7 +275,7 @@ function buildTagList(items: readonly string[], onRemove: (item: string) => void
     const btn = el('button', 'tag-x', '×')
     btn.type = 'button'
     btn.title = ot('opt.s5', '移除')
-    btn.setAttribute('aria-label', ot('opt.s6', `移除 ${item}`))
+    btn.setAttribute('aria-label', fmt(ot('opt.s6', '移除 {p1}'), { p1: item }))
     btn.addEventListener('click', () => onRemove(item))
     tag.append(btn)
     wrap.append(tag)
@@ -334,7 +334,7 @@ async function ensureEndpointPermissions(patch: Partial<Config>): Promise<boolea
     if (await chrome.permissions.contains({ origins: [origin] })) continue
     const granted = await chrome.permissions.request({ origins: [origin] })
     if (!granted) {
-      showToast(ot('opt.s8', `未授予 ${origin} 访问权限，该接口将无法连通`))
+      showToast(fmt(ot('opt.s8', '未授予 {p1} 访问权限，该接口将无法连通'), { p1: origin }))
       return false
     }
   }
@@ -347,7 +347,7 @@ async function patchConfig(patch: Partial<Config>): Promise<void> {
     config = await sendBg<Config>({ kind: 'setConfig', patch })
     showToast(ot('opt.s9', '已保存'))
   } catch (e) {
-    showToast(ot('opt.s10', `保存失败：${errMsg(e)}`))
+    showToast(fmt(ot('opt.s10', '保存失败：{p1}'), { p1: errMsg(e) }))
   }
   renderContent()
 }
@@ -828,14 +828,14 @@ function renderEngine(root: HTMLElement): void {
         const r = await sendBg<TestEngineResult>({ kind: 'testEngine' })
         if (r.ok) {
           testResult.style.color = 'var(--tv-success)'
-          testResult.textContent = ot('opt.s18', `连接成功：Hello → ${r.text ?? ''}（${r.engine}，${r.elapsedMs}ms）`)
+          testResult.textContent = fmt(ot('opt.s18', '连接成功：Hello → {p1}（{p2}，{p3}ms）'), { p1: r.text ?? '', p2: r.engine, p3: r.elapsedMs })
         } else {
           testResult.style.color = 'var(--tv-danger-text)'
-          testResult.textContent = ot('opt.s19', `连接失败：${r.error ?? '未知错误'}（${r.elapsedMs}ms）`)
+          testResult.textContent = fmt(ot('opt.s19', '连接失败：{p1}（{p2}ms）'), { p1: r.error ?? '未知错误', p2: r.elapsedMs })
         }
       } catch (e) {
         testResult.style.color = 'var(--tv-danger-text)'
-        testResult.textContent = ot('opt.s20', `连接失败：${errMsg(e)}`)
+        testResult.textContent = fmt(ot('opt.s20', '连接失败：{p1}'), { p1: errMsg(e) })
       } finally {
         testBtn.disabled = false
         testBtn.textContent = ot('opt.s16', '测试连接')
@@ -1107,13 +1107,13 @@ function buildCustomEngineForm(editId: string | null): HTMLElement {
         sel.addEventListener('change', () => {
           if (sel.value) {
             modelInput.value = sel.value
-            fetchHint.textContent = ot('opt.s53', `已选择 ${sel.value}`)
+            fetchHint.textContent = fmt(ot('opt.s53', '已选择 {p1}'), { p1: sel.value })
           }
         })
         modelPickWrap.append(sel)
-        fetchHint.textContent = ot('opt.s54', `拉到 ${models.length} 个模型`)
+        fetchHint.textContent = fmt(ot('opt.s54', '拉到 {p1} 个模型'), { p1: models.length })
       } catch (e) {
-        fetchHint.textContent = ot('opt.s55', `获取模型列表失败：${errMsg(e)}`)
+        fetchHint.textContent = fmt(ot('opt.s55', '获取模型列表失败：{p1}'), { p1: errMsg(e) })
       } finally {
         fetchBtn.disabled = false
         fetchBtn.textContent = ot('opt.s48', '获取模型列表')
@@ -1408,7 +1408,7 @@ function renderGlossary(root: HTMLElement): void {
     importBtn.addEventListener('click', () => {
       const { terms, skipped } = parseGlossaryImport(area.value)
       if (terms.length === 0) {
-        glossaryImportMsg = skipped > 0 ? ot('opt.s82', `已导入 0 条，跳过 ${skipped} 行`) : ot('opt.s83', '请先粘贴文本或选择文件')
+        glossaryImportMsg = skipped > 0 ? fmt(ot('opt.s82', '已导入 0 条，跳过 {p1} 行'), { p1: skipped }) : ot('opt.s83', '请先粘贴文本或选择文件')
         renderContent()
         return
       }
@@ -1416,7 +1416,7 @@ function renderGlossary(root: HTMLElement): void {
       const merged = mergeGlossaryTerms(config.glossary, terms)
       const added = merged.length - before
       const totalSkipped = skipped + (terms.length - added)
-      glossaryImportMsg = ot('opt.s84', `已导入 ${added} 条，跳过 ${totalSkipped} 行`)
+      glossaryImportMsg = fmt(ot('opt.s84', '已导入 {p1} 条，跳过 {p2} 行'), { p1: added, p2: totalSkipped })
       void patchConfig({ glossary: merged })
     })
     bar.append(fileLabel, importBtn)
@@ -1524,7 +1524,7 @@ async function removeWord(id: string): Promise<void> {
     await sendBg<null>({ kind: 'deleteWord', id })
     showToast(ot('opt.s99', '已删除'))
   } catch (e) {
-    showToast(ot('opt.s100', `删除失败：${errMsg(e)}`))
+    showToast(fmt(ot('opt.s100', '删除失败：{p1}'), { p1: errMsg(e) }))
   }
   wordsLoaded = false
   await loadWords()
@@ -1574,7 +1574,7 @@ async function importWords(file: File): Promise<void> {
   const text = await file.text()
   const result = parseWordsJson(text)
   if (result.error || !result.words) {
-    showToast(ot('opt.s104', `导入失败：${result.error ?? '未知错误'}`))
+    showToast(fmt(ot('opt.s104', '导入失败：{p1}'), { p1: result.error ?? '未知错误' }))
     return
   }
   let okCount = 0
@@ -1586,7 +1586,7 @@ async function importWords(file: File): Promise<void> {
       // 单条失败跳过，继续导入其余
     }
   }
-  showToast(ot('opt.s105', `已导入 ${okCount} 条生词`))
+  showToast(fmt(ot('opt.s105', '已导入 {p1} 条生词'), { p1: okCount }))
   wordsLoaded = false
   await loadWords()
 }
@@ -1709,7 +1709,7 @@ async function init(): Promise<void> {
     config = await sendBg<Config>({ kind: 'getConfig' })
     if (urlLang && UI_LANGS.some((l) => l.code === urlLang)) config.uiLang = urlLang as Config['uiLang']
   } catch (e) {
-    app.textContent = ot('opt.s138', `加载配置失败：${errMsg(e)}`)
+    app.textContent = fmt(ot('opt.s138', '加载配置失败：{p1}'), { p1: errMsg(e) })
     return
   }
   buildShell(app)

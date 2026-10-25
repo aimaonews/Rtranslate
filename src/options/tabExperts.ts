@@ -10,7 +10,7 @@
 import type { Config, ExpertPreset } from '../shared/config'
 import { BUILTIN_EXPERTS } from '../core/experts'
 import { genId } from '../shared/ids'
-import { t, resolveUiLang } from '../shared/i18n'
+import { fmt, t, resolveUiLang } from '../shared/i18n'
 import { expertName } from '../shared/uiLabels'
 
 /** 模块级界面语言（renderExpertsTab 进入时设置；嵌套辅助函数共用） */
@@ -72,7 +72,7 @@ export function renderExpertsTab(root: HTMLElement, ctx: ExpertsTabCtx): void {
     radio.type = 'radio'
     radio.name = 'tv-expert-active'
     radio.checked = expert.id === activeId
-    radio.setAttribute('aria-label', ot('opt.experts.s4', `设为当前：${expertName(expert, moduleUiLang)}`))
+    radio.setAttribute('aria-label', fmt(ot('opt.experts.s4', '设为当前：{p1}'), { p1: expertName(expert, moduleUiLang) }))
     radio.addEventListener('change', () => {
       if (radio.checked && expert.id !== activeId) {
         patchExperts({ activeId: expert.id, list })
@@ -175,7 +175,7 @@ function buildForm(
     const found = list.find((e) => e.id === state.id)
     if (!found) return null // 专家已被删除
     draft = found
-    title = state.mode === 'edit' ? ot('opt.experts.s12', `编辑专家：${expertName(found, moduleUiLang)}`) : ot('opt.experts.s13', `查看内置专家：${expertName(found, moduleUiLang)}`)
+    title = state.mode === 'edit' ? fmt(ot('opt.experts.s12', '编辑专家：{p1}'), { p1: expertName(found, moduleUiLang) }) : fmt(ot('opt.experts.s13', '查看内置专家：{p1}'), { p1: expertName(found, moduleUiLang) })
   }
 
   const card = el('section', 'card')
@@ -239,7 +239,7 @@ function buildForm(
         mode: 'create',
         draft: {
           id: '',
-          name: ot('opt.experts.s24', `${draft.name} 副本`),
+          name: fmt(ot('opt.experts.s24', '{p1} 副本'), { p1: draft.name }),
           builtin: false,
           systemPrompt: draft.systemPrompt,
           userPrompt: draft.userPrompt,

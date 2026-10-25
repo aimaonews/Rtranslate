@@ -471,7 +471,7 @@ function renderDemoResult(): void {
   } else if (demoState === 'loading') {
     demoResultEl.textContent = L('onboarding.demo.translating', '翻译中…')
   } else if (demoState === 'error') {
-    demoResultEl.textContent = L('ob.s7', `${L('onboarding.demo.failed', '翻译失败：')}${demoText}`)
+    demoResultEl.textContent = fmt(L('ob.s7', '{p1}{p2}'), { p1: L('onboarding.demo.failed', '翻译失败：'), p2: demoText })
   } else {
     demoResultEl.textContent = demoText
   }
@@ -613,7 +613,7 @@ async function boot(): Promise<void> {
     uiLang = resolveUiLang(config.uiLang)
   } catch (e) {
     // 配置未加载成功时无法得知 uiLang，按默认中文展示错误
-    app.textContent = L('ob.s8', `${t('onboarding.loadFailed', 'zh-CN', '加载配置失败：')}${errMsg(e)}`)
+    app.textContent = fmt(L('ob.s8', '{p1}{p2}'), { p1: t('onboarding.loadFailed', 'zh-CN', '加载配置失败：'), p2: errMsg(e) })
     return
   }
   render()
