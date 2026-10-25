@@ -6,6 +6,7 @@
 //   3b. contenteditable：textContent 直接赋值 + InputEvent
 import type { Config } from '../shared/config'
 import type { BgResponse, TranslateResult } from '../shared/protocol'
+import { ct } from './uiLang'
 
 let config: Config | null = null
 let lastKeyTime = 0
@@ -153,16 +154,16 @@ function showTip(el: HTMLElement, text: string) {
 async function translateInput(el: HTMLElement, raw: string, targetLang: string) {
   let text = raw
   if (config?.input.trigger === 'tripleSpace') text = raw.replace(/[ =\-]{3}$/, '')
-  showTip(el, '翻译中…')
+  showTip(el, ct('sel.translating', '翻译中…'))
   try {
     const resp = (await chrome.runtime.sendMessage({
       kind: 'translate', text, targetLang, sourceLang: 'auto',
     })) as BgResponse<TranslateResult>
     if (!resp.ok) throw new Error(resp.error)
     const ok = await smartReplaceText(el, resp.data.text)
-    showTip(el, ok ? '已翻译并替换' : '替换失败，请手动粘贴')
+    showTip(el, ok ? ct('input.replaced', '已翻译并替换') : ct('input.replaceFailed', '替换失败，请手动粘贴'))
   } catch (err) {
-    showTip(el, `翻译失败：${err instanceof Error ? err.message : String(err)}`)
+    showTip(el, ct('sel.translateFailed', '翻译失败：') + (err instanceof Error ? err.message : String(err)))
   }
 }
 

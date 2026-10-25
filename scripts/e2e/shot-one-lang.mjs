@@ -243,11 +243,15 @@ while (Date.now() < bubbleDeadline) {
     expression: `(() => {
       var pop = document.querySelector('.tv-sel-popup');
       var tr = pop && pop.querySelector('.tv-sel-translation');
-      return pop && tr ? (tr.innerText || '').trim().slice(0, 60) : '';
+      var btns = pop ? Array.from(pop.querySelectorAll('.tv-sel-btn')).map(function(b){return b.textContent;}).join('/') : '';
+      var ball = document.querySelector('.tv-ball');
+      return (pop && tr ? (tr.innerText || '').trim().slice(0, 60) : '') + '|' + btns + '|' + (ball ? ball.textContent : '');
     })()`,
     returnByValue: true,
   }, sessionId)
-  bubbleText = r.result?.value || ''
+  const bubbleParts = (r.result?.value || '').split('|')
+  bubbleText = bubbleParts[0] || ''
+  if (bubbleParts[1]) console.log('bubble buttons:', bubbleParts[1], '| ball glyph:', bubbleParts[2] || 'none')
   if (bubbleText) break
 }
 console.log('bubble:', bubbleText)

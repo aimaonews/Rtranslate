@@ -9,6 +9,7 @@ import { applyHighlights } from './highlight'
 import { detectPageLang } from '../core/detect'
 import { DEFAULT_CONFIG, normalizeConfig, type Config } from '../shared/config'
 import type { BgRequest, BgResponse, ContentRequest, PageStateResult } from '../shared/protocol'
+import { setContentUiLang } from './uiLang'
 
 const w = window as unknown as { __TV_CONTENT_INJECTED__?: boolean }
 if (!w.__TV_CONTENT_INJECTED__) {
@@ -48,6 +49,7 @@ async function main() {
 
 function applyConfig(config: Config, first = false) {
   currentConfig = config
+  setContentUiLang(config)
   setSelectionConfig(config)
   setHoverConfig(config)
   setInputConfig(config)

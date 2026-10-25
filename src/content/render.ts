@@ -3,6 +3,7 @@
 import { buildTranslationHtml } from './dom'
 import { getStyle } from '../core/styles'
 import type { Config } from '../shared/config'
+import { ct } from './uiLang'
 
 const INLINE_MAX_LEN = 12
 
@@ -91,7 +92,7 @@ export function showLoading(el: Element): HTMLElement {
   spinner.setAttribute('data-tv-owned', '1')
   spinner.setAttribute('data-tv-loading', '1')
   spinner.className = 'tv-loading'
-  spinner.title = 'Rtranslate 翻译中…'
+  spinner.title = ct('render.loading', 'Rtranslate 翻译中…')
   el.appendChild(spinner)
   return spinner
 }
@@ -107,10 +108,10 @@ export function showError(el: Element, opts: ErrorOptions): HTMLElement {
   box.setAttribute('data-tv-owned', '1')
   box.setAttribute('data-tv-error', '1')
   box.className = 'tv-error'
-  box.textContent = `⚠ 翻译失败：${opts.message}`
+  box.textContent = '⚠ ' + ct('sel.translateFailed', '翻译失败：') + opts.message
   const retry = document.createElement('button')
   retry.className = 'tv-error-retry'
-  retry.textContent = '重试'
+  retry.textContent = ct('render.retry', '重试')
   retry.addEventListener('click', (e) => {
     e.stopPropagation()
     if (opts.onRetry) opts.onRetry()

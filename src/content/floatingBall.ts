@@ -1,4 +1,5 @@
 // 悬浮球：拖拽 + 点击切换整页翻译。支持运行时开关（关闭即移除 DOM 与监听，无需刷新页面）。
+import { ct, ballGlyph } from './uiLang'
 export interface BallHooks {
   isActive: () => boolean
   onToggle: () => void
@@ -32,14 +33,19 @@ export function toggleFloatingBall(enabled: boolean, h: BallHooks) {
     disposeBall()
     return
   }
-  if (ball) return // 已存在，无需重建
+  if (ball) {
+    // 已存在：界面语言可能变化，刷新字符与提示
+    ball.textContent = ballGlyph()
+    ball.title = ct('ball.tip', 'Rtranslate：点击翻译/恢复原文（可拖拽）')
+    return
+  }
   hooks = h
   ball = document.createElement('div')
   ball.className = 'tv-ball'
   ball.setAttribute('data-tv-owned', '1')
   ball.setAttribute('translate', 'no')
-  ball.textContent = '译'
-  ball.title = 'Rtranslate：点击翻译/恢复原文（可拖拽）'
+  ball.textContent = ballGlyph()
+  ball.title = ct('ball.tip', 'Rtranslate：点击翻译/恢复原文（可拖拽）')
   document.body.appendChild(ball)
 
   let dragging = false

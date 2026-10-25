@@ -13,6 +13,7 @@ import { LANGS, COMMON_LANG_CODES, langNative } from '../core/langs'
 import { TRANSLATION_STYLES, getStyle } from '../core/styles'
 import type { Config } from '../shared/config'
 import { t } from '../shared/i18n'
+import '../shared/i18n-dicts'
 import type {
   BgRequest,
   BgResponse,

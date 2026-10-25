@@ -9,6 +9,7 @@
 
 import { DEFAULT_CONFIG, type Config } from '../shared/config'
 import type { BgResponse } from '../shared/protocol'
+import { ct } from './uiLang'
 
 /** 与 background/compare.ts 的 CompareResult 对齐（content 不跨边界 import background 实现） */
 interface CompareResultItem {
@@ -19,8 +20,8 @@ interface CompareResultItem {
   elapsedMs: number
 }
 
-/** 引擎中文显示名（卡片标题）；未知引擎回退注册表 name / id。 */
-const ENGINE_NAMES: Record<string, string> = {
+/** 引擎显示名（卡片标题）；zh 界面用中文品牌名，其余用国际名；未知引擎回退注册表 name / id。 */
+const ENGINE_NAMES_ZH: Record<string, string> = {
   google: '谷歌',
   bing: '微软',
   mymemory: 'MyMemory',
@@ -31,6 +32,22 @@ const ENGINE_NAMES: Record<string, string> = {
   gemini: 'Gemini',
   libretranslate: 'LibreTranslate',
   custom: '自定义',
+}
+const ENGINE_NAMES_EN: Record<string, string> = {
+  google: 'Google',
+  bing: 'Microsoft',
+  mymemory: 'MyMemory',
+  deepl: 'DeepL',
+  openai: 'OpenAI-compatible',
+  deepseek: 'DeepSeek',
+  claude: 'Claude',
+  gemini: 'Gemini',
+  libretranslate: 'LibreTranslate',
+  custom: 'Custom',
+}
+
+function engineNames(): Record<string, string> {
+  return ct('cmp.engine.google', '谷歌') === '谷歌' ? ENGINE_NAMES_ZH : ENGINE_NAMES_EN
 }
 
 const DEFAULT_COMPARE_ENGINES = ['google', 'bing']
@@ -129,7 +146,7 @@ function getSelectionText(): string {
 }
 
 function engineLabel(id: string, fallback?: string): string {
-  return ENGINE_NAMES[id] ?? fallback ?? id
+  return engineNames()[id] ?? fallback ?? id
 }
 
 function formatElapsed(ms: number): string {
@@ -171,7 +188,7 @@ function runCompare(text: string): void {
     body.className = 'tv-compare-card-body'
     const spin = document.createElement('span')
     spin.className = 'tv-compare-spin'
-    body.append(spin, document.createTextNode('翻译中…'))
+    body.append(spin, document.createTextNode(ct('sel.translating', '翻译中…')))
     card.append(head, body)
     results.appendChild(card)
     bodies.set(id, { body, elapsed })
@@ -192,21 +209,21 @@ function runCompare(text: string): void {
         if (item.error !== undefined) {
           const e = document.createElement('span')
           e.className = 'tv-compare-error'
-          e.textContent = `失败：${item.error}`
+          e.textContent = ct('cmp.engineFailed', '失败：') + item.error
           slot.body.appendChild(e)
         } else {
           slot.body.textContent = item.text ?? ''
         }
         // 卡片标题补全注册表名（未知引擎的兜底）
         const nameEl = slot.body.parentElement?.querySelector('.tv-compare-engine')
-        if (nameEl && !ENGINE_NAMES[item.engineId]) nameEl.textContent = engineLabel(item.engineId, item.name)
+        if (nameEl && !engineNames()[item.engineId]) nameEl.textContent = engineLabel(item.engineId, item.name)
       }
     })
     .catch((e: Error) => {
       results.textContent = ''
       const hint = document.createElement('div')
       hint.className = 'tv-compare-hint'
-      hint.textContent = `对比翻译失败：${e.message}`
+      hint.textContent = ct('cmp.runFailed', '对比翻译失败：') + e.message
       results.appendChild(hint)
     })
     .finally(() => {
@@ -239,35 +256,35 @@ async function openWindow(initialText: string): Promise<void> {
   header.className = 'tv-compare-header'
   const title = document.createElement('span')
   title.className = 'tv-compare-title'
-  title.textContent = '多引擎对比翻译'
+  title.textContent = ct('cmp.title', '多引擎对比翻译')
   const closeBtn = document.createElement('button')
   closeBtn.className = 'tv-compare-close'
   closeBtn.type = 'button'
   closeBtn.textContent = '×'
-  closeBtn.title = '关闭 (Esc)'
+  closeBtn.title = ct('cmp.close', '关闭 (Esc)')
   header.append(title, closeBtn)
 
   const input = document.createElement('textarea')
   input.className = 'tv-compare-input'
-  input.placeholder = '输入要对比翻译的文本…'
+  input.placeholder = ct('cmp.placeholder', '输入要对比翻译的文本…')
   input.value = initialText
 
   const toolbar = document.createElement('div')
   toolbar.className = 'tv-compare-toolbar'
   const target = document.createElement('span')
   target.className = 'tv-compare-target'
-  target.textContent = `目标语言：${currentConfig.general.targetLang}`
+  target.textContent = ct('cmp.targetLang', '目标语言：') + currentConfig.general.targetLang
   const runBtn = document.createElement('button')
   runBtn.className = 'tv-compare-run'
   runBtn.type = 'button'
-  runBtn.textContent = '对比翻译'
+  runBtn.textContent = ct('cmp.run', '对比翻译')
   toolbar.append(target, runBtn)
 
   const results = document.createElement('div')
   results.className = 'tv-compare-results'
   const hint = document.createElement('div')
   hint.className = 'tv-compare-hint'
-  hint.textContent = '输入文本后点击「对比翻译」'
+  hint.textContent = ct('cmp.hint', '输入文本后点击「对比翻译」')
   results.appendChild(hint)
 
   panel.append(header, input, toolbar, results)
