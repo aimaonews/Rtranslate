@@ -1,0 +1,34 @@
+{
+ "en": {
+  "opt.s63": "Choose the display style of the translation on the page; the large preview text is a live preview.",
+  "opt.s86": "Browse, export, or import saved words; data is stored locally in your browser only."
+ },
+ "de": {
+  "opt.s63": "Anzeigestil der Übersetzung auf der Seite wählen; die großen Vorschauzeichen dienen als Live-Vorschau.",
+  "opt.s86": "Gespeicherte Vokabeln ansehen, exportieren oder importieren; Daten werden nur lokal im Browser gespeichert."
+ },
+ "es": {
+  "opt.s63": "Selecciona el estilo de visualización de la traducción en la página; los caracteres grandes sirven como vista previa en tiempo real.",
+  "opt.s86": "Explora, exporta o importa tus palabras favoritas; los datos se guardan solo en este navegador."
+ },
+ "fr": {
+  "opt.s63": "Choisir le style d'affichage de la traduction sur la page ; le grand caractère d'aperçu est un aperçu en temps réel.",
+  "opt.s86": "Parcourir, exporter ou importer les mots favoris ; les données sont stockées uniquement dans votre navigateur local."
+ },
+ "pt-BR": {
+  "opt.s63": "Selecione o estilo de exibição da tradução na página; o caractere grande é uma prévia em tempo real.",
+  "opt.s86": "Navegue, exporte ou importe palavras favoritas; os dados são salvos apenas neste navegador."
+ },
+ "ja": {
+  "opt.s63": "ページ内での訳文の表示スタイルを選択；大きなプレビュー文字はリアルタイムプレビューです。",
+  "opt.s86": "保存した単語帳を閲覧、エクスポート、インポート；データはこのブラウザ内にのみ保存されます。"
+ },
+ "zh-TW": {
+  "opt.s63": "選擇譯文在頁面中的顯示樣式；大號預覽字元為即時預覽。",
+  "opt.s86": "瀏覽、匯出或匯入收藏的生詞；資料僅儲存於本機瀏覽器中。"
+ },
+ "ko": {
+  "opt.s63": "페이지 내 번역문 표시 스타일 선택; 큰 미리보기 문자로 실시간 미리보기 제공.",
+  "opt.s86": "즐겨찾기한 단어 열람, 내보내기 또는 가져오기; 데이터는 로컬 브라우저에만 저장됩니다."
+ }
+}

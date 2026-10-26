@@ -1,0 +1,66 @@
+{
+  "phases": {
+    "A": {
+      "state": {
+        "active": true,
+        "translatedCount": 11,
+        "failedCount": 0,
+        "host": "127.0.0.1"
+      },
+      "count": 11,
+      "samples": [
+        "慢科技的静默力量",
+        "在一个痴迷于速度的行业中，一小部分开发者和设计师正在重新发现“少即是多”的价值，即更审慎、更专注地做事。他们称之为“慢技术”：一种尊重用户注意力而非与之竞争的软件。",
+        "原则很简单：通知以批量方式到达，而不是每隔几分钟就打断用户；功能被精简，只保留最核心的部分；界面默认采用舒缓的配色和充足的留白。"
+      ],
+      "errorBoxes": [],
+      "ball": true
+    },
+    "B": {
+      "popupExists": true,
+      "translation": "原则很简单：通知以批量方式到达，而不是每隔几分钟就打断用户；功能被精简，只保留最核心的部分；界面默认采用舒缓的配色和充足的留白。",
+      "buttons": [
+        "AI 解析",
+        "✍ 写作",
+        "☆ 收藏",
+        "朗读",
+        "复制",
+        "关闭"
+      ]
+    },
+    "C": {
+      "value": "This is a Chinese input box test text, used to verify whether the input box translation function is working properly."
+    },
+    "D": {
+      "active": true,
+      "translatedCount": 11,
+      "failedCount": 0,
+      "host": "127.0.0.1",
+      "restoredEmail": true,
+      "restoredPhone": true,
+      "emailText": "如需了解有关该研究的更多详情，请通过 john.doe@example.com 联系我，或在办公时间致电 +86 138 1234 5678。"
+    },
+    "E": {
+      "saved": "deliberately",
+      "state": 0,
+      "stats1": {
+        "dueCount": 1,
+        "newCount": 1,
+        "totalWords": 1,
+        "translatedChars": 50368
+      },
+      "dueChanged": true,
+      "afterState": 1,
+      "reps": 1
+    },
+    "F": {
+      "title": "Rtranslate - 闪卡复习",
+      "hasContent": true,
+      "snippet": "Rtranslate 闪卡复习 结束复习 今日复习完成 所有到期卡片都已复习完毕。 1 总词数 0 到期数 去网页上划词收藏生词吧 结束复习",
+      "gradeButtons": [
+        "结束复习"
+      ]
+    }
+  },
+  "errors": []
+}

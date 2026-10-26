@@ -1205,7 +1205,7 @@ function buildCustomEngineForm(editId: string | null): HTMLElement {
 // ===== 标签页 3：译文样式 =====
 
 function renderStyle(root: HTMLElement): void {
-  const c = card(ot('opt.s62', '样式选择'), ot('opt.s63', '选择译文在页面中的展示样式；大号「译」字为实时预览。'))
+  const c = card(ot('opt.s62', '样式选择'), ot('opt.s63', '选择译文在页面中的展示样式；大号预览字符为实时预览。'))
   const grid = el('div', 'style-grid')
   for (const s of TRANSLATION_STYLES) {
     const label = el('label', 'style-card' + (config.style.styleId === s.id ? ' selected' : ''))
