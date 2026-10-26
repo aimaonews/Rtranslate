@@ -613,7 +613,7 @@ async function boot(): Promise<void> {
     uiLang = resolveUiLang(config.uiLang)
   } catch (e) {
     // 配置未加载成功时无法得知 uiLang，按默认中文展示错误
-    app.textContent = fmt(L('ob.s8', '{p1}{p2}'), { p1: t('onboarding.loadFailed', 'zh-CN', '加载配置失败：'), p2: errMsg(e) })
+    app.textContent = fmt(L('ob.s8', '{p1}{p2}'), { p1: t('onboarding.loadFailed', resolveUiLang('auto'), '加载配置失败：'), p2: errMsg(e) })
     return
   }
   render()

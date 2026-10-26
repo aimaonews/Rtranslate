@@ -26,6 +26,7 @@ import {
   DICT_ZH_TW,
   DICT_KO,
 } from "../../src/shared/i18n-dicts";
+import { PAGE_DICTS } from "../../src/shared/i18n-pages";
 import { DEFAULT_CONFIG } from "../../src/shared/config";
 import type { Config } from "../../src/shared/config";
 
@@ -116,20 +117,6 @@ const EXPECTED_KEYS = [
   "engine.libretranslateDesc",
   "engine.getApiKey",
   "engine.aimaoKeyPh",
-  "engine.endpoint",
-  "engine.model",
-  "engine.timeout",
-  "engine.connectivity",
-  "engine.testConnection",
-  "engine.testing",
-  "engine.connected",
-  "engine.testFailed",
-  "engine.show",
-  "engine.hide",
-  "engine.none",
-  "engine.add",
-  "engine.remove",
-  "engine.empty",
   "opt.s1",
   "opt.s2",
   "opt.s3",
@@ -521,82 +508,6 @@ const EXPECTED_KEYS = [
   "general.neverSites",
   "general.neverSitesDesc",
   "general.domainPlaceholder",
-  "files.dropzone.sub",
-  "files.card.run.desc",
-  "files.title",
-  "files.card.file.title",
-  "files.card.file.desc",
-  "files.dropzone.main",
-  "files.dropzone.button",
-  "files.card.settings.title",
-  "files.field.targetLang",
-  "files.field.outputMode",
-  "files.card.run.title",
-  "files.action.translate",
-  "files.action.translateHint",
-  "files.action.cancel",
-  "files.action.download",
-  "files.pe.title",
-  "files.pe.toggle",
-  "files.pe.desc",
-  "files.pe.limitHint",
-  "files.file.remove",
-  "files.toast.unsupported",
-  "files.toast.running",
-  "files.pe.count",
-  "files.pe.segLabel",
-  "files.status.exportedNote",
-  "files.progress",
-  "files.toast.peReset",
-  "onboarding.progress",
-  "onboarding.field.targetLang",
-  "onboarding.allLangs",
-  "onboarding.field.engine",
-  "onboarding.field.displayMode",
-  "onboarding.skip",
-  "onboarding.welcome.title",
-  "onboarding.welcome.subtitle",
-  "onboarding.next",
-  "onboarding.pin.title",
-  "onboarding.pin.desc",
-  "onboarding.pin.step1",
-  "onboarding.pin.step2",
-  "onboarding.pin.step3",
-  "onboarding.prev",
-  "onboarding.demo.translating",
-  "onboarding.demo.failed",
-  "onboarding.demo.title",
-  "onboarding.demo.hint",
-  "onboarding.finish",
-  "onboarding.done.title",
-  "onboarding.done.desc",
-  "onboarding.loadFailed",
-  "review.interval.lessThanMinute",
-  "review.interval.hours",
-  "review.interval.days",
-  "review.interval.months",
-  "review.kbd.space",
-  "review.kbd.or",
-  "review.progress",
-  "review.reveal",
-  "review.flipHint",
-  "review.noTranslation",
-  "review.toast.gradeFailed",
-  "review.empty.title",
-  "review.empty.desc",
-  "review.done.title",
-  "review.done.desc",
-  "review.sessionDone.title",
-  "review.sessionDone.desc",
-  "review.stats.total",
-  "review.stats.due",
-  "review.stats.session",
-  "review.result.hint",
-  "review.continue",
-  "review.exit",
-  "review.toast.refreshFailed",
-  "review.toast.loadFailed",
-  "review.title",
 ];
 
 // ===== resolveUiLang =====
@@ -930,5 +841,56 @@ describe("通用页界面语言下拉", () => {
       cardByTitle("Interface language"),
     );
     expect(sel.value).toBe("auto");
+  });
+});
+
+
+// ===== 字典健全性（防重建污染回归：2026-10 字典灾后重建曾混入 76 个 pages 键与 374 处错位值）=====
+
+describe("字典健全性（防重建污染回归）", () => {
+  const ALL_DICTS: [string, Record<string, string>][] = [
+    ["en", Object.fromEntries(EXPECTED_KEYS.map((k) => [k, t(k, "en", "")]))],
+    ["de", DICT_DE],
+    ["es", DICT_ES],
+    ["fr", DICT_FR],
+    ["pt-BR", DICT_PT_BR],
+    ["ja", DICT_JA],
+    ["zh-TW", DICT_ZH_TW],
+    ["ko", DICT_KO],
+  ];
+  const PH = /\{(\w+)\}/g;
+
+  it("字典归属：i18n-dicts 与 i18n-pages 键集合不相交（pages 键只允许出现在 i18n-pages）", () => {
+    for (const [name, dict] of ALL_DICTS) {
+      for (const key of Object.keys(dict)) {
+        if (PAGE_DICTS.en && key in PAGE_DICTS.en) {
+          throw new Error(`${name} 字典含 pages 专属键 ${key}（应只存在于 i18n-pages.ts）`);
+        }
+      }
+    }
+  });
+
+  it("占位符一致性：每个键在全部 9 个字典中的 {占位符} 集合相同（防键值错位）", () => {
+    for (const key of EXPECTED_KEYS) {
+      const sets = ALL_DICTS.map(([name, dict]) => {
+        const v = dict[key];
+        return [name, (String(v ?? "").match(PH) || []).sort().join(",")] as const;
+      });
+      const ref = sets[0][1];
+      for (const [name, ph] of sets) {
+        expect(ph, `${name}.${key} 占位符集合`).toBe(ref);
+      }
+    }
+  });
+
+  it("值非空壳：占位符-only 值仅允许出现在拼接型键白名单（正文在内层 t()）", () => {
+    const ALLOWLIST = new Set(["pop.s2", "pop.s3", "ob.s7", "ob.s8", "opt.glossaryLibs.s6", "opt.glossaryLibs.s12"]);
+    for (const [name, dict] of ALL_DICTS) {
+      for (const [key, v] of Object.entries(dict)) {
+        if (ALLOWLIST.has(key)) continue;
+        const text = String(v).replace(/\{p?\w+\}/g, "").trim();
+        expect(text.length > 0, `${name}.${key} 值为纯占位符空壳`).toBe(true);
+      }
+    }
   });
 });

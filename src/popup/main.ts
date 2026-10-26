@@ -821,7 +821,7 @@ export async function init(): Promise<void> {
     config = await sendBg<Config>({ kind: 'getConfig' })
   } catch (e) {
     // 配置未加载成功时无法得知 uiLang，按默认中文展示
-    app.textContent = fmt(ot('pop.s3', '{p1}{p2}'), { p1: t('popup.loadFailed', config?.uiLang ?? 'zh-CN', '加载配置失败：'), p2: errMsg(e) })
+    app.textContent = fmt(ot('pop.s3', '{p1}{p2}'), { p1: t('popup.loadFailed', resolveUiLang(config?.uiLang ?? 'auto'), '加载配置失败：'), p2: errMsg(e) })
     return
   }
 
