@@ -5,6 +5,11 @@ import { registerDict } from './i18n'
  */
 
 export const DICT_DE: Record<string, string> = {
+  'style.soft-gray': 'Sanftes Grau',
+  'style.underline-dotted': 'Gepunktete Unterstreichung',
+  'style.highlight-yellow': 'Gelb hervorheben',
+  'style.highlight-green': 'Grün hervorheben',
+  'style.blur-mask': 'Unschärfe-Maske (bei Hover)',
   'lang.autoDetect': 'Automatisch erkennen',
   'lang.commonGroup': 'Häufig genutzte Sprachen',
   'lang.allGroup': 'Alle Sprachen',
@@ -483,6 +488,11 @@ export const DICT_DE: Record<string, string> = {
 }
 
 export const DICT_ES: Record<string, string> = {
+  'style.soft-gray': 'Gris suave',
+  'style.underline-dotted': 'Subrayado punteado',
+  'style.highlight-yellow': 'Resaltado amarillo',
+  'style.highlight-green': 'Resaltado verde',
+  'style.blur-mask': 'Máscara de desenfoque (al pasar el cursor)',
   'lang.autoDetect': 'Detectar automáticamente',
   'lang.commonGroup': 'Idiomas frecuentes',
   'lang.allGroup': 'Todos los idiomas',
@@ -961,6 +971,11 @@ export const DICT_ES: Record<string, string> = {
 }
 
 export const DICT_FR: Record<string, string> = {
+  'style.soft-gray': 'Gris doux',
+  'style.underline-dotted': 'Soulignement pointillé',
+  'style.highlight-yellow': 'Surbrillance jaune',
+  'style.highlight-green': 'Surbrillance verte',
+  'style.blur-mask': 'Masque flou (affichage au survol)',
   'lang.autoDetect': 'Détection auto',
   'lang.commonGroup': 'Langues courantes',
   'lang.allGroup': 'Toutes les langues',
@@ -1439,6 +1454,11 @@ export const DICT_FR: Record<string, string> = {
 }
 
 export const DICT_PT_BR: Record<string, string> = {
+  'style.soft-gray': 'Cinza suave',
+  'style.underline-dotted': 'Sublinhado pontilhado',
+  'style.highlight-yellow': 'Realce amarelo',
+  'style.highlight-green': 'Realce verde',
+  'style.blur-mask': 'Máscara de desfoque (mostrar ao passar o mouse)',
   'lang.autoDetect': 'Detectar automaticamente',
   'lang.commonGroup': 'Idiomas frequentes',
   'lang.allGroup': 'Todos os idiomas',
@@ -1917,6 +1937,11 @@ export const DICT_PT_BR: Record<string, string> = {
 }
 
 export const DICT_JA: Record<string, string> = {
+  'style.soft-gray': 'ソフトグレー',
+  'style.underline-dotted': '点線下線',
+  'style.highlight-yellow': '黄色ハイライト',
+  'style.highlight-green': '緑色ハイライト',
+  'style.blur-mask': 'ぼかしマスク（ホバーで表示）',
   'lang.autoDetect': '自動検出',
   'lang.commonGroup': 'よく使う言語',
   'lang.allGroup': 'すべての言語',
@@ -2395,6 +2420,11 @@ export const DICT_JA: Record<string, string> = {
 }
 
 export const DICT_ZH_TW: Record<string, string> = {
+  'style.soft-gray': '柔和灰',
+  'style.underline-dotted': '虛線底線',
+  'style.highlight-yellow': '黃色高亮',
+  'style.highlight-green': '綠色高亮',
+  'style.blur-mask': '模糊遮罩（懸停顯示）',
   'lang.autoDetect': '自動偵測',
   'lang.commonGroup': '常用語言',
   'lang.allGroup': '所有語言',
@@ -2873,6 +2903,11 @@ export const DICT_ZH_TW: Record<string, string> = {
 }
 
 export const DICT_KO: Record<string, string> = {
+  'style.soft-gray': '부드러운 회색',
+  'style.underline-dotted': '점선 밑줄',
+  'style.highlight-yellow': '노란색 강조',
+  'style.highlight-green': '초록색 강조',
+  'style.blur-mask': '블러 마스크(호버 시 표시)',
   'lang.autoDetect': '자동 감지',
   'lang.commonGroup': '자주 쓰는 언어',
   'lang.allGroup': '모든 언어',

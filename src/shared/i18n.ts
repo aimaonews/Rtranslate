@@ -64,6 +64,11 @@ export function fmt(template: string, vars: Record<string, string | number>): st
 // ===== 英文基础字典 =====
 
 const EN: Record<string, string> = {
+  'style.soft-gray': 'Soft gray',
+  'style.underline-dotted': 'Dotted underline',
+  'style.highlight-yellow': 'Yellow highlight',
+  'style.highlight-green': 'Green highlight',
+  'style.blur-mask': 'Blur mask (show on hover)',
   'settings': 'Settings',
   'lang.autoDetect': 'Auto-detect',
   'lang.commonGroup': 'Common languages',

@@ -27,12 +27,20 @@ import {
   DICT_KO,
 } from "../../src/shared/i18n-dicts";
 import { PAGE_DICTS } from "../../src/shared/i18n-pages";
+import { TRANSLATION_STYLES } from "../../src/core/styles";
+import { BUILTIN_EXPERTS } from "../../src/core/experts";
+import { BUILTIN_ENGINES } from "../../src/shared/engines";
 import { DEFAULT_CONFIG } from "../../src/shared/config";
 import type { Config } from "../../src/shared/config";
 
 // ===== EN 字典键集合（与 src/shared/i18n.ts 中 EN 字典一一对应，共 82 键） =====
 
 const EXPECTED_KEYS = [
+  "style.soft-gray",
+  "style.underline-dotted",
+  "style.highlight-yellow",
+  "style.highlight-green",
+  "style.blur-mask",
   "settings",
   "lang.autoDetect",
   "lang.commonGroup",
@@ -893,4 +901,19 @@ describe("字典健全性（防重建污染回归）", () => {
       }
     }
   });
+
+  it("数据键存在性：样式/专家/引擎的 nameKey 与 descKey 在全部 9 字典中都有值（防连字符键被解析器丢弃）", () => {
+    const dataKeys: string[] = [
+      ...TRANSLATION_STYLES.map((s) => s.nameKey),
+      ...BUILTIN_EXPERTS.map((e) => e.nameKey).filter((k): k is string => Boolean(k)),
+      ...BUILTIN_ENGINES.flatMap((e) => [e.nameKey, e.descKey].filter((k): k is string => Boolean(k))),
+    ];
+    for (const key of dataKeys) {
+      for (const [name, dict] of ALL_DICTS) {
+        expect(typeof dict[key], `${name}.${key} 缺失（数据键必须存在于全部字典）`).toBe("string");
+        expect(String(dict[key]).length, `${name}.${key} 空值`).toBeGreaterThan(0);
+      }
+    }
+  });
+
 });
