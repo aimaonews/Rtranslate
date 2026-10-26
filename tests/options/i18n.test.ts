@@ -549,6 +549,32 @@ describe("resolveUiLang", () => {
     expect(resolveUiLang("auto", "zh")).toBe("zh-CN");
   });
 
+  it("显式不支持语言 → 英语兜底（英语为项目兜底语言）", () => {
+    expect(resolveUiLang("it")).toBe("en");
+    expect(resolveUiLang("ru-RU")).toBe("en");
+    expect(resolveUiLang("xx-YY")).toBe("en");
+    expect(resolveUiLang("")).toBe("en");
+    // zh 系变体归一（旧配置可能存裸 zh）
+    expect(resolveUiLang("zh")).toBe("zh-CN");
+    expect(resolveUiLang("zh-Hant")).toBe("zh-TW");
+    expect(resolveUiLang("zh-HK")).toBe("zh-TW");
+    // 地区变体归一到主语言
+    expect(resolveUiLang("pt")).toBe("pt-BR");
+    expect(resolveUiLang("pt-PT")).toBe("pt-BR");
+    expect(resolveUiLang("en-US")).toBe("en");
+    expect(resolveUiLang("de-AT")).toBe("de");
+    expect(resolveUiLang("ja-JP")).toBe("ja");
+  });
+
+  it("t()：不支持语言或缺键时英语字典兜底（不再回退中文）", () => {
+    // 不支持语言（模拟旧配置残留 uiLang=it）→ 取英语值
+    expect(t("settings", "it", "设置")).toBe("Settings");
+    expect(t("style.soft-gray", "it", "柔和灰")).toBe("Soft gray");
+    // 键在某语言缺失（模拟）→ 英语值；英语也缺 → 中文原文
+    expect(t("no.such.key", "de", "原文中文")).toBe("原文中文");
+    expect(t("no.such.key", "it", "原文中文")).toBe("原文中文");
+  });
+
   it("auto：de/es/fr/pt/ja/ko 按前缀映射（pt 一律 pt-BR）", () => {
     expect(resolveUiLang("auto", "de-DE")).toBe("de");
     expect(resolveUiLang("auto", "de-AT")).toBe("de");

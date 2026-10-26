@@ -19,8 +19,27 @@ export const UI_LANGS: ReadonlyArray<{ code: UiLangCode; name: string }> = [
 ]
 
 /** 浏览器界面语言 → 支持的语言（不匹配回退 en） */
+/** 支持的界面语言集合（UI_LANGS 去 auto）；不在列表的语言一律回退英语（英语为兜底语言） */
+const SUPPORTED_UI_LANGS: ReadonlySet<string> = new Set(
+  UI_LANGS.filter((l) => l.code !== 'auto').map((l) => l.code),
+)
+
+/** zh 系变体归一：zh/zh-Hans/zh-CN/zh-SG → zh-CN；zh-Hant/zh-TW/zh-HK/zh-MO → zh-TW */
+function zhVariant(raw: string): 'zh-CN' | 'zh-TW' | null {
+  const l = String(raw).toLowerCase()
+  if (!l.startsWith('zh')) return null
+  return l.includes('tw') || l.includes('hk') || l.includes('mo') || l.includes('hant') ? 'zh-TW' : 'zh-CN'
+}
+
 export function resolveUiLang(uiLang: UiLangCode | string, browserLang?: string): ResolvedLang {
-  if (uiLang !== 'auto') return uiLang as ResolvedLang
+  if (uiLang !== 'auto') {
+    // 显式值：zh 系归一；pt 系归 pt-BR；其余按主子标签匹配支持列表，不支持 → 英语兜底
+    const zh = zhVariant(uiLang)
+    if (zh) return zh
+    const primary = String(uiLang).toLowerCase().split('-')[0]
+    if (primary === 'pt') return 'pt-BR'
+    return SUPPORTED_UI_LANGS.has(primary) ? (primary as ResolvedLang) : 'en'
+  }
   const raw = (browserLang ?? (typeof navigator !== 'undefined' ? navigator.language : 'en')).toLowerCase()
   if (raw.startsWith('zh')) {
     return raw.includes('tw') || raw.includes('hk') || raw.includes('mo') || raw.includes('hant') ? 'zh-TW' : 'zh-CN'
@@ -48,7 +67,11 @@ export function registerDict(lang: ResolvedLang, dict: Record<string, string>): 
 /** 取界面文案；zh-CN 直接回退原文；其他语言查注册表，缺 key 回退原文 */
 export function t(key: string, lang: ResolvedLang | string, zhFallback: string): string {
   if (lang === 'zh-CN') return zhFallback
-  return DICTS.get(lang as ResolvedLang)?.get(key) ?? zhFallback
+  const hit = DICTS.get(lang as ResolvedLang)?.get(key)
+  if (hit !== undefined) return hit
+  // 语言不在支持列表（如旧配置残留）或该语言缺键：英语兜底，仍无则回退中文原文
+  const en = DICTS.get('en')?.get(key)
+  return en ?? zhFallback
 }
 
 /** 便捷：按配置取文案（自动解析 auto） */

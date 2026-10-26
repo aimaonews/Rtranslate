@@ -54,7 +54,7 @@ async function boot(): Promise<BootResult> {
       getURL: (p: string) => p,
       sendMessage: (msg: { kind: string; texts?: string[] }) => {
         if (msg.kind === 'getConfig') {
-          return Promise.resolve({ ok: true, data: { general: { targetLang: 'zh-CN' } } })
+          return Promise.resolve({ ok: true, data: { uiLang: 'zh-CN', general: { targetLang: 'zh-CN' } } })
         }
         if (msg.kind === 'translateBatch') {
           return Promise.resolve({ ok: true, data: (msg.texts ?? []).map((t) => `T:${t}`) })
